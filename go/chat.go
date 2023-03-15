@@ -8,11 +8,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
-	"os"
-
-	"github.com/joho/godotenv"
+	"strings"
 )
 
 type Role int
@@ -33,38 +32,6 @@ var (
 
 func (r Role) String() string {
 	return [...]string{"system", "user", "assistant"}[r]
-}
-
-type Config struct {
-	Key   string // your openai api key
-	Proxy string // "if you have to use proxy to reach openai"
-}
-
-func Default(key string) Config {
-	return Config{
-		Key: key,
-	}
-}
-
-// read config keys in .env file
-// TH_KEY=sk-***
-// TH_PROXY=127.0.0.1
-func FromEnv() Config {
-	if err := godotenv.Load(); err != nil {
-		panic(err)
-	}
-
-	key := os.Getenv("TH_KEY")
-	if key == "" {
-		panic(ErrEmptyKey)
-	}
-
-	proxy := os.Getenv("TH_PROXY")
-
-	return Config{
-		Key:   key,
-		Proxy: proxy,
-	}
 }
 
 type Message struct {
@@ -120,7 +87,57 @@ type ChatCompletionStream struct {
 	Choices []ChatCompletionStreamChoice `json:"choices"`
 }
 
-func (conf Config) Chat(ctx context.Context, req Request) (msgChan chan string, errChan chan error, err error) {
+// APIError provides error information returned by the OpenAI API.
+type APIError struct {
+	Message string  `json:"message"`
+	Type    string  `json:"type"`
+	Param   *string `json:"param,omitempty"`
+	Code    *string `json:"code,omitempty"`
+	Stream  bool    `json:"stream,omitempty"`
+}
+
+func (e *APIError) Error() string {
+	return e.Message
+}
+
+type ErrorResponse struct {
+	StatusCode int
+	Err        *APIError `json:"error,omitempty"`
+}
+
+// https://platform.openai.com/docs/guides/error-codes/api-errors
+func (er ErrorResponse) Error() string {
+	errMsg := strings.ToLower(er.Err.Message)
+	switch er.StatusCode {
+	case 401:
+		if strings.Contains(errMsg, "invalid authentication") {
+			return "err.openai.invalid_auth"
+		} else if strings.Contains(errMsg, "incorrect api key") {
+			return "err.openai.incorrect_key"
+		} else if strings.Contains(errMsg, "must be a member") {
+			return "err.openai.not_member"
+		}
+	case 429:
+		if strings.Contains(errMsg, "rate limit") {
+			return "err.openai.rate_limit"
+		} else if strings.Contains(errMsg, "current quota") {
+			return "err.openai.billing"
+		} else if strings.Contains(errMsg, "overloaded") {
+			return "err.openai.overloaded"
+		}
+	case 500:
+		return "err.openai.server_error"
+	}
+	return "err.openai.not_found"
+}
+
+// RequestError provides informations about generic request errors.
+type RequestError struct {
+	StatusCode int
+	Err        error
+}
+
+func (conf *Config) Chat(ctx context.Context, req Request) (msgChan chan string, errChan chan error, err error) {
 	// only support stream request
 	req.Stream = true
 
@@ -165,8 +182,27 @@ func (conf Config) Chat(ctx context.Context, req Request) (msgChan chan string, 
 	// Send the request and get the response
 	resp, err := client.Do(request)
 	if err != nil {
-		fmt.Println("openai api error:", err.Error())
+		fmt.Println("[NETWORK ERROR]:", err.Error())
 		return nil, nil, err
+	}
+
+	// handle the errors seperately
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusBadRequest {
+		var errRes ErrorResponse
+
+		// Read and print the response body
+		respBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		err = json.Unmarshal(respBytes, &errRes)
+		if err != nil {
+			return nil, nil, fmt.Errorf("%d", http.StatusInternalServerError)
+		}
+		errRes.StatusCode = resp.StatusCode
+		fmt.Println("[OPENAI ERROR]", errRes.StatusCode, errRes.Err.Message)
+		return nil, nil, errRes
 	}
 
 	msgChan = make(chan string)

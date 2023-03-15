@@ -1,0 +1,22 @@
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore editor backup files
+*~
+*.swp
+
+# Ignore build artifacts
+*.o
+*.a
+
+# Ignore logs
+*.log
+
+# Ignore temporary files
+*.tmp
+
+# dot env files
+.env
+
+tmp
