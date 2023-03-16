@@ -1,46 +1,35 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import Counter from './lib/Counter.svelte'
+  import Header from "./lib/Header.svelte";
+  import Content from "./lib/Content.svelte";
+  import Footer from "./lib/Footer.svelte";
 </script>
 
-<main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer"> 
-      <img src="/vite.svg" class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer"> 
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
+<main
+  class="w-full h-screen relative from-blue-500 via-lime-500 to-yellow-500 bg-lime-300 dark:bg-black dark:from-red-500/30 dark:via-lime-500/20 dark:to-purple-500/30"
+>
+  <div class="absolute w-full h-screen bg-gradient-to-bl img-cover">
+    <!-- <div class="flex flex-col w-full h-full z-10"> -->
+    <!-- <Header /> -->
+    <!-- </div> -->
   </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
+  <div
+    class="hidden md:flex  h-48 bottom-0 mask absolute z-20 from-blue-500 via-lime-500 to-yellow-500 bg-lime-300 dark:bg-black dark:from-red-500/10 dark:via-lime-500/20 dark:to-purple-500/30"
+    style="width:calc(100vw - 14px)"
+  >
+    <div
+      class="absolute w-full h-screen bg-gradient-to-bl img-cover"
+      style="top:calc(-100vh + 12rem)"
+    />
   </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  <Content />
+  <Footer />
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
+  .img-cover {
+    object-fit: cover;
+    -webkit-mask-image: url(./assets/pattern-11.svg);
+    mask-image: url(./assets/pattern-11.svg);
+    /* background-image: url(../assets/pattern-11.svg); */
   }
 </style>

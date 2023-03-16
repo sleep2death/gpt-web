@@ -55,8 +55,8 @@ func NewMessage(role Role, content string) (msg Message) {
 }
 
 type Request struct {
-	Model            string         `json:"model"`
 	Messages         []Message      `json:"messages"`
+	Model            string         `json:"model,omitempty"`
 	MaxTokens        int            `json:"max_tokens,omitempty"`
 	Temperature      float32        `json:"temperature,omitempty"`
 	TopP             float32        `json:"top_p,omitempty"`

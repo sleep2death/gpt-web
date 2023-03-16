@@ -63,8 +63,25 @@ func FromEnv() *Config {
 	}
 }
 
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func createRouter(conf *Config) *gin.Engine {
 	r := gin.Default()
+	r.Use(CORSMiddleware())
 	r.POST(conf.Path, getChatHandler(conf))
 
 	return r
@@ -79,6 +96,7 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 			})
 			return
 		}
+		fmt.Println("messages:", req.Messages)
 
 		msgChan, errChan, err := conf.Chat(c.Request.Context(), req)
 
@@ -89,25 +107,24 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 			return
 		}
 
+		// c.Header("Content-Type", "text/html; charset=utf-8")
+		// c.Writer.WriteHeader(http.StatusOK)
+		// c.String(http.StatusOK, "hello")
 		c.Stream(func(w io.Writer) bool {
 			select {
 			case msg, ok := <-msgChan:
 				if !ok {
-					msgChan = nil
 					return false
 				}
 				outputBytes := bytes.NewBufferString(msg)
-				_, err := c.Writer.Write(outputBytes.Bytes())
-				if err != nil {
-					return false
-				}
+				// fmt.Println("output:", outputBytes.String())
+				c.Writer.Write(outputBytes.Bytes()) // nolint
 				return true
 			case err, ok := <-errChan:
 				if !ok {
-					errChan = nil
 					return false
 				}
-				outputBytes := bytes.NewBufferString(fmt.Sprintf("<<Error: %s>>", err.Error()))
+				outputBytes := bytes.NewBufferString(fmt.Sprintf("Error>>> %s", err.Error()))
 				c.Writer.Write(outputBytes.Bytes()) //nolint
 				return false
 			}
