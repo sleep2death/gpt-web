@@ -1,4 +1,4 @@
-package texthero
+package gpt_gin
 
 import (
 	"bytes"
@@ -26,7 +26,7 @@ func Default(key string) *Config {
 	return &Config{
 		Key:  key,
 		Host: ":8080",
-		Path: "/texthero/chat",
+		Path: "/gpt-gin/chat",
 	}
 }
 
@@ -38,21 +38,21 @@ func FromEnv() *Config {
 		panic(err)
 	}
 
-	key := os.Getenv("TH_KEY")
+	key := os.Getenv("GG_KEY")
 	if key == "" {
 		panic(ErrEmptyKey)
 	}
 
-	proxy := os.Getenv("TH_PROXY")
+	proxy := os.Getenv("GG_PROXY")
 
-	host := os.Getenv("TH_HOST")
+	host := os.Getenv("GG_HOST")
 	if host == "" {
 		host = ":8080"
 	}
 
-	path := os.Getenv("TH_PATH")
+	path := os.Getenv("GG_PATH")
 	if path == "" {
-		path = "/texthero/chat"
+		path = "/gpt-gin/chat"
 	}
 
 	return &Config{
@@ -89,6 +89,7 @@ func createRouter(conf *Config) *gin.Engine {
 
 func getChatHandler(conf *Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		fmt.Println("received...")
 		var req Request
 		if err := c.BindJSON(&req); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{

@@ -1,4 +1,4 @@
-module github.com/sleep2death/texthero
+module github.com/sleep2death/gpt_gin
 
 go 1.19
 

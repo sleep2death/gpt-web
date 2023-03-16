@@ -3,13 +3,14 @@
   import PaperPlaneIcon from "/src/assets/paper-plane.svg";
   import { scale } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
-  import { input } from "./store.js";
+  import { input, send } from "./store.js";
 </script>
 
 <button
   class="dark:text-neutral-400 text-stone-500 active:bg-stone-500
         >
         active:text-gray-50 rounded-full p-2.5 disabled:pointer-events-none"
+  on:click={send}
   disabled={$input === ""}
 >
   {#if $input === ""}

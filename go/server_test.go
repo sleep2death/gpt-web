@@ -1,4 +1,4 @@
-package texthero
+package gpt_gin
 
 import (
 	"bytes"

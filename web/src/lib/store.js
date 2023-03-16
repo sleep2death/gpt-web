@@ -29,8 +29,9 @@ export async function send() {
   const { signal } = get(controller);
 
   try {
-    const response = await fetch("http://localhost:8080/texthero/chat", {
+    const response = await fetch(import.meta.env.VITE_API_URL, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
+	  mode:"cors",
       headers: {
         "Content-Type": "application/json",
         "Accept": "text/event-stream",
