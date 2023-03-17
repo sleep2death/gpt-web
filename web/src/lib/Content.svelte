@@ -2,6 +2,7 @@
   import { controller, messages } from "./store";
   import { afterUpdate } from "svelte";
   import ChatBulb from "./chat-bulb.svelte";
+  import Error from "./error.svelte";
 
   let container;
 
@@ -38,6 +39,7 @@
           </div>
         {/if}
       {/each}
+      <Error />
     </div>
   </div>
 </div>

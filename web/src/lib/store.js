@@ -12,7 +12,11 @@ export const messages = writable([])
 // request abort controller
 export var controller = writable(null)
 
-export async function send() {
+// error message
+export var error = writable("")
+
+export async function send(opt) {
+  console.log(opt)
   if (get(controller)) return
 
   let inputValue = get(input).trim()
@@ -21,11 +25,19 @@ export async function send() {
   const iMsg = { role: isInit ? "system" : "user", content: inputValue }
 
   // console.log(response.ok, response.statusText)
-  const oMsg = { role: "assistant", content: "" }
-  messages.update(m => [...m, iMsg, oMsg])
+  let oMsg
+  if (opt && opt["error_continue"] === true) {
+    oMsg = get(messages)[get(messages).length - 1]
+    console.log("CONCAT")
+  } else {
+    oMsg = { role: "assistant", content: "" }
+    messages.update(m => [...m, iMsg, oMsg])
+  }
+
 
   // reset
   input.set("")
+  error.set("")
 
   controller.set(new AbortController());
   const { signal } = get(controller);
@@ -39,7 +51,7 @@ export async function send() {
         "Accept": "text/event-stream",
         "Connection": "keep-alive",
       },
-      body: JSON.stringify({ messages: [...get(messages), iMsg] }), // body data type must match "Content-Type" header
+      body: JSON.stringify({ messages: [...get(messages)] }), // body data type must match "Content-Type" header
       signal
     })
 
@@ -50,19 +62,16 @@ export async function send() {
       const { value, done } = await reader.read();
       if (done) break;
       const incoming = dec.decode(value)
-      if (incoming.includes("Error>>>")) {
+      if (incoming.includes("ERROR>>>")) {
         console.warn(incoming)
-        if (incoming.includes("too many empty messages")) {
-          oMsg.notFinished = true
-          messages.update(m => m)
-        }
+        error.set(incoming)
         break
       }
       oMsg.content += incoming
       messages.update(m => m)
     }
   } catch (e) {
-    console.error(e)
+    error.set(e.toString())
   } finally {
     controller.set(null)
   }

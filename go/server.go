@@ -89,7 +89,6 @@ func createRouter(conf *Config) *gin.Engine {
 
 func getChatHandler(conf *Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("received...")
 		var req Request
 		if err := c.BindJSON(&req); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -125,7 +124,7 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 				if !ok {
 					return false
 				}
-				outputBytes := bytes.NewBufferString(fmt.Sprintf("Error>>> %s", err.Error()))
+				outputBytes := bytes.NewBufferString(fmt.Sprintf("ERROR>>> %s", err.Error()))
 				c.Writer.Write(outputBytes.Bytes()) //nolint
 				return false
 			}

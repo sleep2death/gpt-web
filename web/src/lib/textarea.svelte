@@ -10,16 +10,18 @@
   });
 </script>
 
-<div class="px-4 py-2 dark:bg-black bg-white rounded-2xl relative">
+<div
+  class="px-4 py-2 dark:bg-black bg-white rounded-2xl relative dark:text-white"
+>
   <div class="grow-wrap">
     <textarea
       name="text"
       id="text"
       bind:value={$input}
       bind:this={textarea}
-      class="break-words break-all outline-none"
+      class="break-words break-all outline-none bg-transparent"
       rows={1}
-      placeholder="问我任何问题"
+      placeholder="请问我任何问题。"
       on:keydown={(evt) => {
         if (evt.ctrlKey && evt.key === "Enter") {
           send();

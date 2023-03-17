@@ -108,27 +108,33 @@ type ErrorResponse struct {
 // https://platform.openai.com/docs/guides/error-codes/api-errors
 func (er ErrorResponse) Error() string {
 	errMsg := strings.ToLower(er.Err.Message)
-	switch er.StatusCode {
-	case 401:
-		if strings.Contains(errMsg, "invalid authentication") {
-			return "err.openai.invalid_auth"
-		} else if strings.Contains(errMsg, "incorrect api key") {
-			return "err.openai.incorrect_key"
-		} else if strings.Contains(errMsg, "must be a member") {
-			return "err.openai.not_member"
-		}
-	case 429:
-		if strings.Contains(errMsg, "rate limit") {
-			return "err.openai.rate_limit"
-		} else if strings.Contains(errMsg, "current quota") {
-			return "err.openai.billing"
-		} else if strings.Contains(errMsg, "overloaded") {
-			return "err.openai.overloaded"
-		}
-	case 500:
-		return "err.openai.server_error"
-	}
-	return "err.openai.not_found"
+	// switch er.StatusCode {
+	// case 400:
+	// 	return "err.openai.server_error"
+	// case 401:
+	// 	if strings.Contains(errMsg, "invalid authentication") {
+	// 		return "err.openai.invalid_auth"
+	// 	} else if strings.Contains(errMsg, "incorrect api key") {
+	// 		return "err.openai.incorrect_key"
+	// 	} else if strings.Contains(errMsg, "must be a member") {
+	// 		return "err.openai.not_member"
+	// 	} else {
+	// 		return "err.not_found.401"
+	// 	}
+	// case 429:
+	// 	if strings.Contains(errMsg, "rate limit") {
+	// 		return "err.openai.rate_limit"
+	// 	} else if strings.Contains(errMsg, "current quota") {
+	// 		return "err.openai.billing"
+	// 	} else if strings.Contains(errMsg, "overloaded") {
+	// 		return "err.openai.overloaded"
+	// 	} else {
+	// 		return "err.not_found.429"
+	// 	}
+	// case 500:
+	// 	return "err.openai.server_error"
+	// }
+	return errMsg
 }
 
 // RequestError provides informations about generic request errors.
