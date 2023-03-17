@@ -31,7 +31,7 @@ export async function send() {
   try {
     const response = await fetch(import.meta.env.VITE_API_URL, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
-	  mode:"cors",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
         "Accept": "text/event-stream",

@@ -20,8 +20,8 @@ body {
 	  black calc(100% - 118px)
 	);
 	mask-image: linear-gradient(
-	  transparent calc(100% -140px),
-	  black calc(100% -118px)
+	  transparent calc(100% - 140px),
+	  black calc(100% - 118px)
 	);
   }
 }

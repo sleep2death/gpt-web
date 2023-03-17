@@ -1,6 +1,6 @@
 <script>
   import { marked } from "marked";
-  import hljs from "highlight.js";
+  import hljs from "highlight.js/lib/core";
 
   const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   if (isDark) {
@@ -37,7 +37,7 @@
 </script>
 
 <div class="flex flex-row w-full my-4">
-  <div class="items-start pr-24 max-w-full md:max-w-3xl">
+  <div class="items-start pr-8 md:pr-24 max-w-full md:max-w-3xl">
     <div
       class="dark:bg-stone-800 dark:text-neutral-300 bg-white rounded-xl px-3 py-2"
     >

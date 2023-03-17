@@ -15,4 +15,13 @@ export default defineConfig({
     // enforce: 'pre' | 'post'
     enforce: "pre",
   }), splitVendorChunkPlugin()],
+  rollupOptions: {
+    output: {
+      manualChunks: (id) => {
+        if (id.includes('highlight.js')) {
+          return 'hljs';
+        }
+      },
+    },
+  }
 })
