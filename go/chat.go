@@ -233,7 +233,7 @@ func (conf *Config) Chat(ctx context.Context, req Request) (msgChan chan string,
 
 			if !bytes.HasPrefix(line, headerData) {
 				emptyMessagesCount++
-				if emptyMessagesCount > 300 {
+				if emptyMessagesCount > 500 {
 					fmt.Println("too many empty messages")
 					errChan <- ErrEmptyMessages
 					break
@@ -252,7 +252,7 @@ func (conf *Config) Chat(ctx context.Context, req Request) (msgChan chan string,
 			}
 
 			for _, c := range resp.Choices {
-				msgChan <- c.Delta.Content
+				msgChan <- fmt.Sprintf("%s", c.Delta.Content)
 			}
 		}
 	}()

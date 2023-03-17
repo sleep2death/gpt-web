@@ -16,7 +16,14 @@
             }}>继续</button
           >，或忽略。
         {:else}
-          {$error}
+          <div>
+            意外错误：{$error}，<button
+              class="underline text-blue-500 mx-1"
+              on:click={() => {
+                $error = "";
+              }}>取消</button
+            >
+          </div>
         {/if}
       </div>
     </div>

@@ -4,8 +4,8 @@
   let textarea;
 
   input.subscribe((value) => {
-    if (value === "" && textarea && textarea.parentNode) {
-      textarea.parentNode.dataset.replicatedValue = "";
+    if (textarea && textarea.parentNode) {
+      textarea.parentNode.dataset.replicatedValue = value;
     }
   });
 </script>
