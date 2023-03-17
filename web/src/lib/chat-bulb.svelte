@@ -1,6 +1,6 @@
 <script>
   import { marked } from "marked";
-  import hljs from "highlight.js/lib/core";
+  import hljs from "highlight.js/lib/common";
 
   const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   if (isDark) {

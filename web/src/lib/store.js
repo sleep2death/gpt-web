@@ -13,7 +13,9 @@ export const messages = writable([])
 export var controller = writable(null)
 
 export async function send() {
-  let inputValue = get(input)
+  if (get(controller)) return
+
+  let inputValue = get(input).trim()
 
   const isInit = get(messages).length === 0
   const iMsg = { role: isInit ? "system" : "user", content: inputValue }
