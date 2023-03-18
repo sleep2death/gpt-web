@@ -3,6 +3,7 @@
   import { afterUpdate } from "svelte";
   import ChatBulb from "./chat-bulb.svelte";
   import Error from "./error.svelte";
+  import ChatBulbUser from "./chat-bulb-user.svelte";
 
   let container;
 
@@ -28,15 +29,7 @@
         {#if role === "assistant"}
           <ChatBulb {content} />
         {:else}
-          <div class="flex flex-row justify-end my-4">
-            <div class="pl-8 md:pl-24 max-w-full md:max-w-3xl">
-              <div
-                class="dark:bg-purple-500 p-2 dark:text-neutral-300 bg-lime-100 rounded-xl "
-              >
-                {content}
-              </div>
-            </div>
-          </div>
+          <ChatBulbUser {content} />
         {/if}
       {/each}
       <Error />
