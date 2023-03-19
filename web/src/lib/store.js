@@ -1,4 +1,4 @@
-import { writable, get } from "svelte/store"
+import { writable, get, derived } from "svelte/store"
 
 // input string
 export const input = writable("")
@@ -15,10 +15,50 @@ export var controller = writable(null)
 // error message
 export var error = writable("")
 
-export async function send(opt) {
-  console.log(opt)
-  if (get(controller)) return
 
+export async function sendGLM(opt) {
+  if (get(controller)) return
+  let inputValue = get(input).trim()
+
+  const isInit = get(messages).length === 0
+  const iMsg = { role: isInit ? "系统" : "用户", content: inputValue }
+
+  const oMsg = { role: "助手", content: "" }
+  messages.update(m => [...m, iMsg, oMsg])
+
+  // reset
+  input.set("")
+  error.set("")
+
+  controller.set(new AbortController());
+  const { signal } = get(controller);
+
+
+  const query = get(messages).reduce((q, item) => q + `${item.role}: ${item.content}\n`, "")
+  console.log("query:", get(messages), query)
+
+  try {
+    const response = await fetch("http://localhost:8189/gpt-glm/chat", {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query, max_length: 4096, top_p: 0.7, temperature: 0.9 }), // body data type must match "Content-Type" header
+      signal
+    })
+    const res = await response.json()
+    oMsg.content += res.response
+    messages.update(m => m)
+  } catch (e) {
+    console.error(e)
+    error.set(e.toString())
+  } finally {
+    controller.set(null)
+  }
+}
+
+export async function send(opt) {
+  if (get(controller)) return
   let inputValue = get(input).trim()
 
   const isInit = get(messages).length === 0

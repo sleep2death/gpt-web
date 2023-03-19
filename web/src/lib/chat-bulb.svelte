@@ -41,7 +41,7 @@
     <div
       class="dark:bg-stone-800 dark:text-neutral-300 bg-white rounded-xl px-3 py-2"
     >
-      <div class="markdown-body ">
+      <div class="markdown-body break-words break-all">
         {#if content && content !== ""}
           {@html marked.parse(content)}
         {:else}

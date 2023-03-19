@@ -3,7 +3,7 @@
   import HandSolidIcon from "/src/assets/hand-paper-solid.svg";
   import { scale } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
-  import { controller, messages } from "./store.js";
+  import { controller, messages, error } from "./store.js";
 </script>
 
 <button
@@ -15,6 +15,7 @@
       $controller.abort();
     } else {
       $messages = [];
+      $error = "";
     }
   }}
 >

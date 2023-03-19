@@ -26,7 +26,7 @@
         : ''} flex flex-col w-full max-w-4xl pb-36"
     >
       {#each $messages as { role, content }}
-        {#if role === "assistant"}
+        {#if role === "assistant" || role === "助手"}
           <ChatBulb {content} />
         {:else}
           <ChatBulbUser {content} />
