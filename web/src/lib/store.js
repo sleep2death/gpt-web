@@ -15,6 +15,9 @@ export var controller = writable(null)
 // error message
 export var error = writable("")
 
+// dark mode
+export var darkmode = writable(false)
+
 // mode
 let temperature = 0.01
 let top_p = 0.7
@@ -95,7 +98,7 @@ export async function send(opt) {
     console.log("RETRY")
     get(messages).pop()
     oMsg = { role: "assistant", content: "" }
-    messages.update(m => [...m, iMsg, oMsg])
+    messages.update(m => [...m, oMsg])
   }
   else {
     oMsg = { role: "assistant", content: "" }

@@ -8,7 +8,7 @@
   class="absolute flex flex-row z-20 justify-center md:pb-8 md:px-16 bottom-0 w-full"
 >
   <div
-    class="flex flex-row justify-center w-full  md:max-w-4xl pb-8 px-2 pt-2 md:p-4 bg-stone-200 border-t dark:bg-stone-700 dark:border-stone-600 md:rounded-2xl"
+    class="flex flex-row justify-center w-full  md:max-w-4xl pb-8 px-2 pt-2 md:p-4 bg-stone-200 border-t dark:bg-stone-700 dark:border-stone-600 md:rounded-2xl space-x-1"
   >
     <div class="py-1 flex flex-col justify-end">
       <ActionBtnLeft />
