@@ -28,7 +28,7 @@
 
 <div class="flex flex-row w-full my-4">
   <div class="items-start pr-8 md:pr-24 max-w-full md:max-w-3xl">
-    <div class="dark:bg-stone-800 bg-white rounded-xl px-3 py-2">
+    <div class="dark:bg-stone-800 bg-neutral-100 rounded-xl px-3 py-2">
       <div class="markdown-body break-words break-all dark:text-neutral-200 ">
         {#if content && content !== ""}
           {@html marked.parse(content)}
@@ -43,5 +43,8 @@
 <style>
   .markdown-body {
     @apply bg-transparent;
+  }
+  :global(pre) {
+    @apply my-2;
   }
 </style>

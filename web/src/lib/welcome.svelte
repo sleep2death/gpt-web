@@ -19,7 +19,7 @@
     <div
       class="dark:bg-stone-800 dark:text-neutral-300 bg-white px-4 py-2 rounded-2xl text-xl text-neutral-800"
     >
-      <h1 class="inline-block">欢迎使用GPT-GIN</h1>
+      <h1 class="inline-block">欢迎使用GPT-WEB</h1>
       <span class="text-xs inline-block align-top rounded px-0.5">beta</span>
     </div>
   </div>

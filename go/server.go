@@ -82,6 +82,7 @@ func CORSMiddleware() gin.HandlerFunc {
 func createRouter(conf *Config) *gin.Engine {
 	r := gin.Default()
 	r.Use(CORSMiddleware())
+	// r.Static("/", "../web/dist")
 	r.POST(conf.Path, getChatHandler(conf))
 
 	return r
