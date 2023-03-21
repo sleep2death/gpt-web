@@ -1,16 +1,6 @@
 <script>
   import { marked } from "marked";
   import hljs from "highlight.js/lib/common";
-
-  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (isDark) {
-    import("../../node_modules/highlight.js/styles/github-dark.css");
-    import("../../node_modules/github-markdown-css/github-markdown-dark.css");
-  } else {
-    import("../../node_modules/highlight.js/styles/github.css");
-    import("../../node_modules/github-markdown-css/github-markdown-light.css");
-  }
-
   export let content = "";
 
   // Set options
@@ -18,13 +8,13 @@
   marked.setOptions({
     renderer: new marked.Renderer(),
     highlight: function (code, lang) {
-      if (lang && lang !== "") {
-        // console.log("code blocks language detected:", lang);
-        const language = hljs.getLanguage(lang) ? lang : "plaintext";
-        return hljs.highlight(code, { language }).value;
-      }
+      // if (lang && lang !== "") {
+      //   // console.log("code blocks language detected:", lang);
+      //   const language = hljs.getLanguage(lang) ? lang : "plaintext";
+      //   return hljs.highlight(code, { language }).value;
+      // }
       // console.warn("code blocks language NOT detected");
-      return hljs.highlightAuto(code).value;
+      return `${hljs.highlightAuto(code).value}`;
     },
     langPrefix: "hljs language-", // highlight.js css expects a top-level 'hljs' class.
     pedantic: false,

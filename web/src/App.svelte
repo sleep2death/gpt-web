@@ -4,6 +4,21 @@
   import { darkmode } from "./lib/store.js";
 </script>
 
+<svelte:head>
+  <!-- elements go here -->
+  {#if $darkmode}
+    <link
+      rel="stylesheet"
+      href="../../node_modules/highlight.js/styles/github-dark.css"
+    />
+  {:else}
+    <link
+      rel="stylesheet"
+      href="../../node_modules/highlight.js/styles/github.css"
+    />
+  {/if}
+</svelte:head>
+
 <main class="{$darkmode ? 'dark' : ''} ">
   <div
     class="w-full h-screen relative from-blue-500 via-lime-500 to-yellow-500 bg-lime-200 dark:bg-black dark:from-red-500/30 dark:via-lime-500/20 dark:to-purple-500/30"
