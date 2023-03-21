@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -82,7 +83,8 @@ func CORSMiddleware() gin.HandlerFunc {
 func createRouter(conf *Config) *gin.Engine {
 	r := gin.Default()
 	r.Use(CORSMiddleware())
-	// r.Static("/", "../web/dist")
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
+	r.Static("/", "../web/dist")
 	r.POST(conf.Path, getChatHandler(conf))
 
 	return r

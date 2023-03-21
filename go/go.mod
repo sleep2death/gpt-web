@@ -3,6 +3,7 @@ module github.com/sleep2death/gpt_gin
 go 1.19
 
 require (
+	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-gonic/gin v1.9.0
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.8.2

@@ -1,7 +1,30 @@
 <script>
+  import { onMount } from "svelte";
   import { marked } from "marked";
-  import hljs from "highlight.js/lib/common";
+  import { darkmode } from "./store";
+
+  let hljs = null;
   export let content = "";
+
+  onMount(async () => {
+    try {
+      hljs = (await import("highlight.js/lib/common")).default;
+    } catch (e) {
+      hljs = null;
+    }
+  });
+
+  darkmode.subscribe(async (d) => {
+    if (!d) {
+      // light mode
+      await import("highlight.js/styles/github.css");
+      await import("github-markdown-css/github-markdown-light.css");
+    } else {
+      // dark mode
+      await import("highlight.js/styles/github-dark.css");
+      await import("github-markdown-css/github-markdown-dark.css");
+    }
+  });
 
   // Set options
   // `highlight` example uses https://highlightjs.org

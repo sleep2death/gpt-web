@@ -3,31 +3,26 @@
   import Footer from "./lib/Footer.svelte";
   import { darkmode } from "./lib/store.js";
 
-  let title = "GPT-WEB";
+  import {
+    init,
+    getLocaleFromNavigator,
+    register,
+    isLoading,
+    _,
+  } from "svelte-i18n";
+
+  register("en", () => import("../i18n/en.json"));
+  register("zh-CN", () => import("../i18n/zh-CN.json"));
+  console.log(getLocaleFromNavigator());
+
+  init({
+    fallbackLocale: "en",
+    initialLocale: getLocaleFromNavigator(),
+  });
 </script>
 
 <svelte:head>
-  <!-- elements go here -->
-  {#if $darkmode}
-    <link
-      rel="stylesheet"
-      href="../../node_modules/highlight.js/styles/github-dark.css"
-    />
-    <link
-      rel="stylesheet"
-      href="../../node_modules/github-markdown-css/github-markdown-dark.css"
-    />
-  {:else}
-    <link
-      rel="stylesheet"
-      href="../../node_modules/highlight.js/styles/github.css"
-    />
-    <link
-      rel="stylesheet"
-      href="../../node_modules/github-markdown-css/github-markdown-light.css"
-    />
-  {/if}
-  <title>{title}</title>
+  <title>{$isLoading ? "" : $_("title")}</title>
 </svelte:head>
 
 <main class="{$darkmode ? 'dark' : ''} ">
