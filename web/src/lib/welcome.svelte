@@ -3,9 +3,9 @@
   import Toggle from "./toggle.svelte";
 
   const labels = [
-    { id: "creative", label: "创意" },
-    { id: "balanced", label: "平衡" },
-    { id: "accurate", label: "精确" },
+    { id: "creative", label: "💡 创意" },
+    { id: "balanced", label: "💎 平衡" },
+    { id: "accurate", label: "🎯 精确" },
   ];
 
   function sendExample(evt) {
@@ -34,7 +34,7 @@
   <div
     class="md:col-start-1 bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl flex flex-col space-y-2 py-4"
   >
-    <div class="text-center">🧐 复杂问题</div>
+    <div class="text-center">🧐 回答问题</div>
     <button class="text-center link" on:click={sendExample}
       >请解释爱因斯坦的狭义相对论</button
     >
