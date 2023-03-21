@@ -9,5 +9,8 @@
   "translation": "📖 翻译外语",
   "example_prompt_1": "广义相对论讲的什么？",
   "example_prompt_2": "如何使用Rust的Rocket框架？",
-  "example_prompt_3": "翻译中文: 'Le passé c’est le passé'"
+  "example_prompt_3": "翻译中文: 'Le passé c’est le passé'",
+  "conversation_style": "选择对话风格",
+  "dark_mode": "黑暗模式",
+  "input_placeholder": "请问我任何问题..."
 }

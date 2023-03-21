@@ -1,5 +1,6 @@
 <script>
   import { input, send } from "./store.js";
+  import { _ } from "svelte-i18n";
 
   let textarea;
 
@@ -21,7 +22,7 @@
       bind:this={textarea}
       class="break-words break-all outline-none bg-transparent"
       rows={1}
-      placeholder="请问我任何问题。"
+      placeholder={$_("input_placeholder")}
       on:keydown={(evt) => {
         if (evt.ctrlKey && evt.key === "Enter") {
           send();

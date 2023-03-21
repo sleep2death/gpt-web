@@ -9,5 +9,8 @@
   "translation": "📖 Translation",
   "example_prompt_1": "What does the General Theory of Relativity talk about?",
   "example_prompt_2": "How to use the 'Rocket' framework in Rust?",
-  "example_prompt_3": "Translate to English: 'Le passé c’est le passé'"
+  "example_prompt_3": "Translate to English: 'Le passé c’est le passé'",
+  "conversation_style": "Choose a conversation style",
+  "dark_mode": "Dark mode",
+  "input_placeholder": "Ask me anything..."
 }

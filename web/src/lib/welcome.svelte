@@ -43,7 +43,7 @@
     <div
       class="flex flex-row bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl p-2 py-1 items-center"
     >
-      <div class="text-xs items-center">夜间模式</div>
+      <div class="text-xs items-center">{$_("dark_mode")}</div>
       <Toggle bind:value={$darkmode} />
     </div>
   </div>
@@ -54,7 +54,8 @@
     >
       <div class="text-center">{example.title}</div>
       {#each example.prompts as prompt}
-        <button class="text-center link" on:click={sendExample}>{prompt}</button
+        <button class="text-center text-blue-500" on:click={sendExample}
+          >{prompt}</button
         >
       {/each}
     </div>
@@ -64,7 +65,7 @@
   <div
     class="flex flex-col justify-center rounded-2xl bg-lime-100 dark:bg-stone-800 dark:text-stone-300 w-fit"
   >
-    <h2 class="text-center p-2 rounded-t-2xl">对话风格</h2>
+    <h2 class="text-center p-2 rounded-t-2xl">{$_("conversation_style")}</h2>
     <div
       class="relative border-t border-lime-300 dark:border-stone-600 flex flex-row justify-center p-2 rounded-b-2xl space-x-2"
     >
@@ -88,7 +89,4 @@
 </div>
 
 <style>
-  .link {
-    @apply text-blue-500;
-  }
 </style>
