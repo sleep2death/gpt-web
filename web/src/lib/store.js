@@ -15,6 +15,28 @@ export var controller = writable(null)
 // error message
 export var error = writable("")
 
+// mode
+let temperature = 0.01
+let top_p = 0.7
+
+export var mode = writable("balanced")
+mode.subscribe(m => {
+  switch (m) {
+    case "creative":
+      temperature = 0.9
+      top_p = 0.5
+      break
+    case "balanced":
+      temperature = 0.5
+      top_p = 0.6
+      break
+    case "accurate":
+      temperature = 0.1
+      top_p = 0.7
+      break
+  }
+})
+
 
 export async function sendGLM(opt) {
   if (get(controller)) return
@@ -69,7 +91,13 @@ export async function send(opt) {
   if (opt && opt["error_continue"] === true) {
     oMsg = get(messages)[get(messages).length - 1]
     console.log("CONCAT")
-  } else {
+  } else if (opt && opt["retry"]) {
+    console.log("RETRY")
+    get(messages).pop()
+    oMsg = { role: "assistant", content: "" }
+    messages.update(m => [...m, iMsg, oMsg])
+  }
+  else {
     oMsg = { role: "assistant", content: "" }
     messages.update(m => [...m, iMsg, oMsg])
   }
@@ -91,7 +119,7 @@ export async function send(opt) {
         "Accept": "text/event-stream",
         "Connection": "keep-alive",
       },
-      body: JSON.stringify({ messages: [...get(messages)] }), // body data type must match "Content-Type" header
+      body: JSON.stringify({ top_p, temperature, messages: [...get(messages)] }), // body data type must match "Content-Type" header
       signal
     })
 
@@ -111,6 +139,7 @@ export async function send(opt) {
       messages.update(m => m)
     }
   } catch (e) {
+    console.error(e)
     error.set(e.toString())
   } finally {
     controller.set(null)

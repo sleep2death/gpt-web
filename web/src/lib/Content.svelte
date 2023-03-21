@@ -4,6 +4,7 @@
   import ChatBulb from "./chat-bulb.svelte";
   import Error from "./error.svelte";
   import ChatBulbUser from "./chat-bulb-user.svelte";
+  import Welcome from "./welcome.svelte";
 
   let container;
 
@@ -25,6 +26,7 @@
         ? 'loading'
         : ''} flex flex-col w-full max-w-4xl pb-36"
     >
+      <Welcome />
       {#each $messages as { role, content }}
         {#if role === "assistant" || role === "助手"}
           <ChatBulb {content} />
@@ -48,6 +50,7 @@
     margin-left: 4px;
     animation: cursor-blink 1.5s steps(2) infinite;
   }
+
   @keyframes cursor-blink {
     0% {
       opacity: 0;
