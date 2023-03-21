@@ -3,26 +3,22 @@
   import Footer from "./lib/Footer.svelte";
   import { darkmode } from "./lib/store.js";
 
-  import {
-    init,
-    getLocaleFromNavigator,
-    register,
-    isLoading,
-    _,
-  } from "svelte-i18n";
+  import { init, getLocaleFromNavigator, addMessages, _ } from "svelte-i18n";
 
-  register("en", () => import("../i18n/en.json"));
-  register("zh-CN", () => import("../i18n/zh-CN.json"));
-  console.log(getLocaleFromNavigator());
+  import en from "../i18n/en.json";
+  import cn from "../i18n/zh-CN.json";
+  addMessages("en", en);
+  addMessages("zh-CN", cn);
 
   init({
     fallbackLocale: "en",
+    loadingDelay: 1000,
     initialLocale: getLocaleFromNavigator(),
   });
 </script>
 
 <svelte:head>
-  <title>{$isLoading ? "" : $_("title")}</title>
+  <title>{$_("title")}</title>
 </svelte:head>
 
 <main class="{$darkmode ? 'dark' : ''} ">

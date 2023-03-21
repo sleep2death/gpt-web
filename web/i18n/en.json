@@ -1,3 +1,13 @@
 {
-  "title": "GPT-WEB"
+  "title": "GPT-WEB",
+  "welcome": "Welome to GPT-WEB",
+  "creative": "💡 Creative",
+  "balanced": "💎 Balanced",
+  "accurate": "🎯 Accurate",
+  "answering": "🧐 Answering",
+  "coding": "🤖 Coding",
+  "translation": "📖 Translation",
+  "example_prompt_1": "What does the General Theory of Relativity talk about?",
+  "example_prompt_2": "How to use the 'Rocket' framework in Rust?",
+  "example_prompt_3": "Translate to English: 'Le passé c’est le passé'"
 }
