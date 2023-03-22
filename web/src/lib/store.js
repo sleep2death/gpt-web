@@ -46,6 +46,7 @@ export async function sendGLM(opt) {
   let inputValue = get(input).trim()
 
   const isInit = get(messages).length === 0
+
   const iMsg = { role: isInit ? "系统" : "用户", content: inputValue }
 
   const oMsg = { role: "助手", content: "" }
@@ -87,6 +88,12 @@ export async function send(opt) {
   let inputValue = get(input).trim()
 
   const isInit = get(messages).length === 0
+
+  console.log(isInit, inputValue)
+  if (inputValue === "" && isInit) {
+    return
+  }
+
   const iMsg = { role: isInit ? "system" : "user", content: inputValue }
 
   // console.log(response.ok, response.statusText)

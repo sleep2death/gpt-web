@@ -1,12 +1,10 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { svelteSVG } from "rollup-plugin-svelte-svg";
+import svg from '@poppanator/sveltekit-svg'
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
-  plugins: [svelte(), svelteSVG({
-    svgo: {},
-    enforce: "pre",
-  }),],
+  plugins: [svelte(), svg({}),],
 })

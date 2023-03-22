@@ -1,9 +1,25 @@
 <script>
-  import ToiletPaperIcon from "/src/assets/toilet-paper.svg";
-  import HandSolidIcon from "/src/assets/hand-paper-solid.svg";
+  import TrashIcon from "../assets/trash3.svg?component";
+  import StopIcon from "../assets/stop-circle-fill.svg?component";
+
   import { scale } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
   import { controller, messages, error } from "./store.js";
+
+  function release(node) {
+    const handleRelease = (evt) => {
+      if (!node.contains(evt.target)) {
+        node.dispatchEvent(new CustomEvent("release"));
+      }
+    };
+    document.addEventListener("release", handleRelease, true);
+
+    return {
+      destroy() {
+        document.removeEventListener("click", handleRelease, true);
+      },
+    };
+  }
 </script>
 
 <button
@@ -18,14 +34,25 @@
       $error = "";
     }
   }}
+  use:release
 >
   {#if !$controller}
     <div in:scale={{ start: 0.6, easing: cubicOut }}>
-      <ToiletPaperIcon width="100%" fill="currentColor" class="w-6 h-6" />
+      <TrashIcon
+        width="20"
+        height="20"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      />
     </div>
   {:else}
     <div in:scale={{ start: 0.6, easing: cubicOut }} class="text-red-500">
-      <HandSolidIcon width="100%" fill="currentColor" class="w-6 h-6" />
+      <StopIcon
+        width="22"
+        height="22"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      />
     </div>
   {/if}
 </button>

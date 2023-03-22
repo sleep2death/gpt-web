@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import { marked } from "marked";
-  import { darkmode } from "./store";
 
   let hljs = null;
   export let content = "";
@@ -14,29 +13,9 @@
     }
   });
 
-  darkmode.subscribe(async (d) => {
-    if (!d) {
-      // light mode
-      await import("highlight.js/styles/github.css");
-      await import("github-markdown-css/github-markdown-light.css");
-    } else {
-      // dark mode
-      await import("highlight.js/styles/github-dark.css");
-      await import("github-markdown-css/github-markdown-dark.css");
-    }
-  });
-
-  // Set options
-  // `highlight` example uses https://highlightjs.org
   marked.setOptions({
     renderer: new marked.Renderer(),
     highlight: function (code, lang) {
-      // if (lang && lang !== "") {
-      //   // console.log("code blocks language detected:", lang);
-      //   const language = hljs.getLanguage(lang) ? lang : "plaintext";
-      //   return hljs.highlight(code, { language }).value;
-      // }
-      // console.warn("code blocks language NOT detected");
       return `${hljs.highlightAuto(code).value}`;
     },
     langPrefix: "hljs language-", // highlight.js css expects a top-level 'hljs' class.

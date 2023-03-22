@@ -30,7 +30,7 @@
   }
 </script>
 
-<div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+<div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
   <div class="md:col-start-2 flex justify-center my-4 relative">
     <div
       class="dark:bg-stone-800 dark:text-neutral-300 bg-white px-4 py-2 rounded-2xl text-xl text-neutral-800"
@@ -61,7 +61,7 @@
     </div>
   {/each}
 </div>
-<div class="flex flex-row justify-center">
+<div class="flex flex-row justify-center mb-4">
   <div
     class="flex flex-col justify-center rounded-2xl bg-lime-100 dark:bg-stone-800 dark:text-stone-300 w-fit"
   >

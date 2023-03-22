@@ -5,8 +5,8 @@
 
   import { init, getLocaleFromNavigator, addMessages, _ } from "svelte-i18n";
 
-  import en from "../i18n/en.json";
-  import cn from "../i18n/zh-CN.json";
+  import en from "../locales/en.json";
+  import cn from "../locales/zh-CN.json";
   addMessages("en", en);
   addMessages("zh-CN", cn);
 
@@ -19,6 +19,18 @@
 
 <svelte:head>
   <title>{$_("title")}</title>
+  <link
+    rel="stylesheet"
+    href={$darkmode
+      ? "../../node_modules/highlight.js/styles/github-dark.css"
+      : "../../node_modules/highlight.js/styles/github.css"}
+  />
+  <link
+    rel="stylesheet"
+    href={$darkmode
+      ? "../../node_modules/github-markdown-css/github-markdown-dark.css"
+      : "../../node_modules/github-markdown-css/github-markdown-light.css"}
+  />
 </svelte:head>
 
 <main class="{$darkmode ? 'dark' : ''} ">

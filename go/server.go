@@ -99,7 +99,8 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 			})
 			return
 		}
-		fmt.Println("messages:", req.Messages)
+
+		// fmt.Println("messages:", req.Messages)
 
 		msgChan, errChan, err := conf.Chat(c.Request.Context(), req)
 
