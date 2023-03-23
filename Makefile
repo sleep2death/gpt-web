@@ -29,7 +29,7 @@ build: ## Build your project and put the output binary in out
 	mkdir -p out/web
 	cp -r ./web/dist out/web/dist
 	## copy .env file
-	cp .env.example out/.env
+	cp .env out/.env
 	## build go binary
 	$(GOCMD) mod tidy
 	$(GOCMD) build -o out/$(BINARY_NAME) cmd/main.go

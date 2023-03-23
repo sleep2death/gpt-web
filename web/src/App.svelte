@@ -2,7 +2,6 @@
   import Content from "./lib/Content.svelte";
   import Footer from "./lib/Footer.svelte";
   import { darkmode } from "./lib/store.js";
-  import { onMount } from "svelte";
 
   import { init, getLocaleFromNavigator, addMessages, _ } from "svelte-i18n";
 
@@ -18,29 +17,11 @@
     initialLocale: getLocaleFromNavigator(),
   });
 
-  let markdown_dark;
-  let markdown_light;
+  import markdown_dark from "github-markdown-css/github-markdown-dark.css?inline";
+  import markdown_light from "github-markdown-css/github-markdown-light.css?inline";
 
-  let highlight_dark;
-  let highlight_light;
-
-  onMount(async () => {
-    markdown_dark = await import(
-      "github-markdown-css/github-markdown-dark.css?inline"
-    );
-    markdown_dark = markdown_dark.default;
-
-    markdown_light = await import(
-      "github-markdown-css/github-markdown-light.css?inline"
-    );
-    markdown_light = markdown_light.default;
-
-    highlight_dark = await import("highlight.js/styles/github-dark.css?inline");
-    highlight_dark = highlight_dark.default;
-
-    highlight_light = await import("highlight.js/styles/default.css?inline");
-    highlight_light = highlight_light.default;
-  });
+  import highlight_dark from "highlight.js/styles/github-dark.css?inline";
+  import highlight_light from "highlight.js/styles/default.css?inline";
 </script>
 
 <svelte:head>

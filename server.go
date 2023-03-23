@@ -15,7 +15,7 @@ import (
 type Config struct {
 	Key   string // your openai api key
 	Proxy string // proxy address
-	Host  string // server host address
+	Host  string // server host port
 	API   string // api path
 }
 
@@ -36,7 +36,7 @@ func FromEnv() *Config {
 		panic(ErrEmptyKey)
 	}
 
-	proxy := os.Getenv("GPTW_PROXY")
+	proxy := os.Getenv("GPTW_RPOXY")
 
 	host := os.Getenv("GPTW_HOST")
 	if host == "" {
