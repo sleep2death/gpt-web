@@ -7,16 +7,16 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/BurntSushi/toml"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Key   string // your openai api key
-	Proxy string // proxy address
-	Host  string // server host address
-	Path  string // path to handle the request
+	Key   string `toml:"key, required"`    // your openai api key
+	Proxy string `toml:"proxy, omitempty"` // proxy address
+	Host  string `toml:"host, omitempty"`  // server host address
 }
 
 func (c *Config) Serve() error {
@@ -27,8 +27,20 @@ func Default(key string) *Config {
 	return &Config{
 		Key:  key,
 		Host: ":8080",
-		Path: "/gpt-gin/chat",
 	}
+}
+
+func FromToml() (conf *Config) {
+	_, err := toml.DecodeFile("./config.toml", &conf)
+	fmt.Println(conf)
+	if err != nil {
+		panic(err)
+	}
+
+	if conf.Key == "" {
+		panic(ErrEmptyKey)
+	}
+	return
 }
 
 // read config keys in .env file
@@ -60,7 +72,6 @@ func FromEnv() *Config {
 		Key:   key,
 		Proxy: proxy,
 		Host:  host,
-		Path:  path,
 	}
 }
 
@@ -84,8 +95,8 @@ func createRouter(conf *Config) *gin.Engine {
 	r := gin.Default()
 	r.Use(CORSMiddleware())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
-	r.Static("/", "../web/dist")
-	r.POST(conf.Path, getChatHandler(conf))
+	r.Static("/", "../build/public")
+	r.POST("/chat", getChatHandler(conf))
 
 	return r
 }

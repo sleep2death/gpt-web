@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	err := gg.FromEnv().Serve()
+	err := gg.FromToml().Serve()
 	if err != nil {
 		log.Fatal(err)
 	}

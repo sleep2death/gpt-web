@@ -133,6 +133,11 @@ export async function send(opt) {
       signal
     })
 
+    if (!response.ok) {
+      const err = await response.json()
+      throw new Error(err.msg)
+    }
+
     const reader = response.body.getReader();
     const dec = new TextDecoder();
 

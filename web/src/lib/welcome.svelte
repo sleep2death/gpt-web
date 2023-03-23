@@ -41,7 +41,7 @@
   </div>
   <div class="md:col-start-3 md:justify-end my-6 flex flex-row justify-end">
     <div
-      class="flex flex-row bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl p-2 py-1 items-center"
+      class="flex flex-row bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl items-center p-2"
     >
       <div class="text-xs items-center">{$_("dark_mode")}</div>
       <Toggle bind:value={$darkmode} />
@@ -50,12 +50,13 @@
   {#each examples as example, i}
     <div
       class="md:col-start-{i +
-        1} bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl flex flex-col space-y-2 py-4"
+        1} bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl flex flex-col space-y-2"
     >
-      <div class="text-center">{example.title}</div>
+      <div class="text-center p-1 pb-0.5">{example.title}</div>
       {#each example.prompts as prompt}
-        <button class="text-center text-blue-500" on:click={sendExample}
-          >{prompt}</button
+        <button
+          class="border-t border-lime-300 dark:border-stone-600 text-center text-blue-500 p-1 pb-0.5"
+          on:click={sendExample}>{prompt}</button
         >
       {/each}
     </div>
@@ -87,6 +88,3 @@
     </div>
   </div>
 </div>
-
-<style>
-</style>
