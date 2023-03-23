@@ -17,6 +17,7 @@
   "err_notfound": "Service not found.",
   "err_invalidkey": "OpenAI API key incorrect.",
   "err_aborted": "Request aborted.",
+  "err_timeout": "Request timeout.",
   "err_unkown": "Unkown Error.",
   "or": "or",
   "retry": "RETRY",

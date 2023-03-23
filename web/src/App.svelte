@@ -56,14 +56,14 @@
 
 <main class={$darkmode ? "dark" : ""} style={markdown_dark}>
   <div
-    class="w-full h-screen relative from-blue-500 via-lime-500 to-yellow-500 bg-lime-200 dark:bg-black dark:from-red-500/30 dark:via-lime-500/20 dark:to-purple-500/30"
+    class="w-full h-screen relative from-blue-500/50 via-lime-500/50 to-yellow-500/50 bg-lime-200 dark:bg-black dark:from-red-500/30 dark:via-lime-500/30 dark:to-purple-500/30"
   >
     <div
       class="absolute w-full h-screen bg-gradient-to-bl img-cover pointer-events-none"
     />
 
     <div
-      class="hidden md:block h-48 bottom-0 mask absolute z-20 from-blue-500 via-lime-500 to-yellow-500 bg-lime-200 dark:bg-black dark:from-red-500/30 dark:via-lime-500/20 dark:to-purple-500/30 pointer-events-none"
+      class="hidden md:block h-48 bottom-0 mask absolute z-20 from-blue-500/50 via-lime-500/50 to-yellow-500/50 bg-lime-200 dark:bg-black dark:from-red-500/30 dark:via-lime-500/30 dark:to-purple-500/30 pointer-events-none"
       style="width:calc(100vw - 14px)"
     >
       <div

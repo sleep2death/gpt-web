@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,7 +42,7 @@ func TestServer(t *testing.T) {
 	}
 
 	// Create a new test request with the JSON payload
-	r, err := http.NewRequest(http.MethodPost, "/texthero/chat", bytes.NewBuffer(payload))
+	r, err := http.NewRequest(http.MethodPost, os.Getenv("GPTW_API"), bytes.NewBuffer(payload))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,5 +57,5 @@ func TestServer(t *testing.T) {
 	engine.ServeHTTP(recorder, r)
 	assert.Equal(t, http.StatusOK, recorder.Code)
 
-	t.Log(recorder.Body.String())
+	// t.Log(recorder.Body.String())
 }

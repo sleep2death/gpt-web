@@ -4,7 +4,7 @@
 
   let message = "";
   error.subscribe((err) => {
-    if (err.includes("<404>")) {
+    if (err.includes("<404>") || err.includes("Failed to fetch")) {
       message = $_("err_notfound");
     } else if (err.includes("too many empty messages")) {
       message = $_("err_notfinished");
@@ -12,6 +12,8 @@
       message = $_("err_invalidkey");
     } else if (err.includes("AbortError")) {
       message = $_("err_aborted");
+    } else if (err.includes("i/o timeout")) {
+      message = $_("err_timeout");
     } else if (err === "") {
       message = "";
     } else {

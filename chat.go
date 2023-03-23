@@ -252,7 +252,7 @@ func (conf *Config) Chat(ctx context.Context, req Request) (msgChan chan string,
 			}
 
 			for _, c := range resp.Choices {
-				msgChan <- fmt.Sprintf("%s", c.Delta.Content)
+				msgChan <- c.Delta.Content
 			}
 		}
 	}()

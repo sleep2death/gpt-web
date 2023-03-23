@@ -158,7 +158,7 @@ export async function send(opt) {
     }
   } catch (e) {
     console.error(e)
-    error.set(`<${response.status}> <error ${e.toString()}>`)
+    error.set(`<${response && response.status ? response.status : ""}> <error ${e.toString()}>`)
   } finally {
     controller.set(null)
   }

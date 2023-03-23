@@ -2,7 +2,6 @@ package gpt_web
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,14 +21,12 @@ func TestChat(t *testing.T) {
 	var content string
 	var errorFromAPI error
 
-	fmt.Println(msg)
 	for {
 		select {
 		case msg, ok := <-msgChan:
 			if !ok {
 				msgChan = nil
 			}
-			fmt.Print(msg)
 			content += msg
 		case err, ok := <-errChan:
 			if !ok {
