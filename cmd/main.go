@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	gg "github.com/sleep2death/gpt_gin"
+	gw "github.com/sleep2death/gpt_web"
 )
 
 func main() {
-	err := gg.FromToml().Serve()
+	err := gw.FromEnv().Serve()
 	if err != nil {
 		log.Fatal(err)
 	}

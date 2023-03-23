@@ -1,4 +1,4 @@
-package gpt_gin
+package gpt_web
 
 import (
 	"bytes"

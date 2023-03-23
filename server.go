@@ -1,4 +1,4 @@
-package gpt_gin
+package gpt_web
 
 import (
 	"bytes"
@@ -7,40 +7,20 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/BurntSushi/toml"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Key   string `toml:"key, required"`    // your openai api key
-	Proxy string `toml:"proxy, omitempty"` // proxy address
-	Host  string `toml:"host, omitempty"`  // server host address
+	Key   string // your openai api key
+	Proxy string // proxy address
+	Host  string // server host address
+	API   string // api path
 }
 
 func (c *Config) Serve() error {
 	return createRouter(c).Run(c.Host)
-}
-
-func Default(key string) *Config {
-	return &Config{
-		Key:  key,
-		Host: ":8080",
-	}
-}
-
-func FromToml() (conf *Config) {
-	_, err := toml.DecodeFile("./config.toml", &conf)
-	fmt.Println(conf)
-	if err != nil {
-		panic(err)
-	}
-
-	if conf.Key == "" {
-		panic(ErrEmptyKey)
-	}
-	return
 }
 
 // read config keys in .env file
@@ -51,27 +31,28 @@ func FromEnv() *Config {
 		panic(err)
 	}
 
-	key := os.Getenv("GG_KEY")
+	key := os.Getenv("GPTW_KEY")
 	if key == "" {
 		panic(ErrEmptyKey)
 	}
 
-	proxy := os.Getenv("GG_PROXY")
+	proxy := os.Getenv("GPTW_PROXY")
 
-	host := os.Getenv("GG_HOST")
+	host := os.Getenv("GPTW_HOST")
 	if host == "" {
-		host = ":8080"
+		host = ":8081"
 	}
 
-	path := os.Getenv("GG_PATH")
-	if path == "" {
-		path = "/gpt-gin/chat"
+	api := os.Getenv("GPTW_API")
+	if api == "" {
+		api = "/gpt-web/chat"
 	}
 
 	return &Config{
 		Key:   key,
 		Proxy: proxy,
 		Host:  host,
+		API:   api,
 	}
 }
 
@@ -93,10 +74,12 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func createRouter(conf *Config) *gin.Engine {
 	r := gin.Default()
+
 	r.Use(CORSMiddleware())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
-	r.Static("/", "../build/public")
-	r.POST("/chat", getChatHandler(conf))
+
+	r.Static("/", "./public/")
+	r.POST(conf.API, getChatHandler(conf))
 
 	return r
 }
