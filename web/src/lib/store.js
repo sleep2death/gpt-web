@@ -1,5 +1,9 @@
 import { writable, get, derived } from "svelte/store"
 
+export const SYSTEM = "system"
+export const ASSISTANT = "assistant"
+export const USER = "user"
+
 // input string
 export const input = writable("")
 
@@ -40,6 +44,7 @@ mode.subscribe(m => {
   }
 })
 
+export const lastMessage = derived(messages, $messages => $messages[$messages.length - 1])
 
 export async function sendGLM(opt) {
   if (get(controller)) return
@@ -89,27 +94,24 @@ export async function send(opt) {
 
   const isInit = get(messages).length === 0
 
-  console.log(isInit, inputValue)
+  // console.log(isInit, inputValue)
   if (inputValue === "" && isInit) {
     return
   }
-
-  const iMsg = { role: isInit ? "system" : "user", content: inputValue }
 
   // console.log(response.ok, response.statusText)
   let oMsg
   if (opt && opt["error_continue"] === true) {
     oMsg = get(messages)[get(messages).length - 1]
-    console.log("CONCAT")
-  } else if (opt && opt["retry"]) {
-    console.log("RETRY")
-    get(messages).pop()
+    // console.log("CONCAT")
+  } else {
     oMsg = { role: "assistant", content: "" }
-    messages.update(m => [...m, oMsg])
-  }
-  else {
-    oMsg = { role: "assistant", content: "" }
-    messages.update(m => [...m, iMsg, oMsg])
+    if (inputValue !== "") {
+      const iMsg = { role: isInit ? "system" : "user", content: inputValue }
+      messages.update(m => [...m, iMsg, oMsg])
+    } else {
+      messages.update(m => [...m, oMsg])
+    }
   }
 
 
@@ -120,8 +122,9 @@ export async function send(opt) {
   controller.set(new AbortController());
   const { signal } = get(controller);
 
+  let response
   try {
-    const response = await fetch(import.meta.env.VITE_API_URL, {
+    response = await fetch(import.meta.env.GPTW_API, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -155,8 +158,24 @@ export async function send(opt) {
     }
   } catch (e) {
     console.error(e)
-    error.set(e.toString())
+    error.set(`<${response.status}> <error ${e.toString()}>`)
   } finally {
     controller.set(null)
+  }
+}
+
+export function abort() {
+  get(controller).abort();
+  removeLastEmptyResponse();
+}
+
+export function removeLastEmptyResponse() {
+  const msg = get(lastMessage)
+  // if content of the assistant is empty, remove it
+  if (msg.role === ASSISTANT && msg.content === "") {
+    messages.update(messages => {
+      messages.pop()
+      return messages
+    })
   }
 }

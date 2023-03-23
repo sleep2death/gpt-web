@@ -12,5 +12,12 @@
   "example_prompt_3": "Translate to English: 'Le passé c’est le passé'",
   "conversation_style": "Choose a conversation style",
   "dark_mode": "Dark mode",
-  "input_placeholder": "Ask me anything..."
+  "input_placeholder": "Ask me anything...",
+  "err_notfound": "Service not found.",
+  "err_user_aborted": "Request aborted.",
+  "or": "or",
+  "retry": "RETRY",
+  "cancel": "CANCEL",
+  "ignore": "IGNORE",
+  "loading": "LOADING..."
 }

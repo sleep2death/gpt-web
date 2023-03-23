@@ -1,5 +1,15 @@
 <script>
-  import { error, send } from "./store";
+  import { error, send, removeLastEmptyResponse } from "./store";
+  import { _ } from "svelte-i18n";
+
+  function retry() {
+    send({ error_continue: true });
+  }
+
+  function cancel() {
+    $error = "";
+    removeLastEmptyResponse();
+  }
 </script>
 
 {#if $error !== ""}
@@ -11,13 +21,20 @@
         {#if $error.includes("too many empty messages")}
           因字数限制未完成，可以点击<button
             class="underline text-blue-500 mx-1"
-            on:click={() => {
-              send({ error_continue: true });
-            }}>继续</button
+            on:click={retry}>继续</button
           >，或忽略。
+        {:else if $error.includes("<404>")}
+          {$_("err_notfound")}<a href="#/" on:click={retry}>{$_("retry")}</a>
+          {$_("or")}
+          <a href="#/" on:click={cancel}>{$_("cancel")}</a>
+        {:else if $error.includes("AbortError")}
+          {$_("err_user_aborted")}<a href="#/" on:click={retry}>{$_("retry")}</a
+          >
+          {$_("or")}
+          <a href="#/" on:click={cancel}>{$_("cancel")}</a>
         {:else}
           <div>
-            意外错误：{$error}，<button
+            意外错误：{$error}<button
               class="underline text-blue-500 mx-1"
               on:click={() => {
                 send({ retry: true });
@@ -29,3 +46,9 @@
     </div>
   </div>
 {/if}
+
+<style>
+  a {
+    @apply underline text-blue-500 mx-1;
+  }
+</style>

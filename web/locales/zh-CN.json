@@ -12,5 +12,11 @@
   "example_prompt_3": "翻译中文: 'Le passé c’est le passé'",
   "conversation_style": "选择对话风格",
   "dark_mode": "黑暗模式",
-  "input_placeholder": "请问我任何问题..."
+  "input_placeholder": "请问我任何问题...",
+  "404_notfound": "服务未找到。",
+  "or": "或",
+  "retry": "重试",
+  "cancel": "取消",
+  "ignore": "忽略",
+  "loading": "正在加载..."
 }

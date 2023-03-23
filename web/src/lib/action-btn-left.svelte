@@ -4,7 +4,7 @@
 
   import { scale } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
-  import { controller, messages, error } from "./store.js";
+  import { controller, messages, error, abort } from "./store.js";
 
   function release(node) {
     const handleRelease = (evt) => {
@@ -28,7 +28,7 @@
         active:text-gray-50 rounded-full p-2.5"
   on:click={() => {
     if ($controller) {
-      $controller.abort();
+      abort();
     } else {
       $messages = [];
       $error = "";

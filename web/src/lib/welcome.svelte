@@ -50,7 +50,7 @@
   {#each examples as example, i}
     <div
       class="md:col-start-{i +
-        1} bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl flex flex-col space-y-2"
+        1} bg-lime-100 dark:bg-stone-800 dark:text-stone-300 rounded-2xl flex flex-col"
     >
       <div class="text-center p-1 pb-0.5">{example.title}</div>
       {#each example.prompts as prompt}

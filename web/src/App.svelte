@@ -2,17 +2,12 @@
   import Content from "./lib/Content.svelte";
   import Footer from "./lib/Footer.svelte";
   import { darkmode } from "./lib/store.js";
+  import { onMount } from "svelte";
 
   import { init, getLocaleFromNavigator, addMessages, _ } from "svelte-i18n";
 
   import en from "../locales/en.json";
   import cn from "../locales/zh-CN.json";
-
-  import markdown_dark from "github-markdown-css/github-markdown-dark.css?inline";
-  import markdown_light from "github-markdown-css/github-markdown-light.css?inline";
-
-  import hljs_dark from "highlight.js/styles/github-dark.css?inline";
-  import hljs_light from "highlight.js/styles/github.css?inline";
 
   addMessages("en", en);
   addMessages("zh-CN", cn);
@@ -22,35 +17,41 @@
     loadingDelay: 1000,
     initialLocale: getLocaleFromNavigator(),
   });
+
+  let markdown_dark;
+  let markdown_light;
+
+  let highlight_dark;
+  let highlight_light;
+
+  onMount(async () => {
+    markdown_dark = await import(
+      "github-markdown-css/github-markdown-dark.css?inline"
+    );
+    markdown_dark = markdown_dark.default;
+
+    markdown_light = await import(
+      "github-markdown-css/github-markdown-light.css?inline"
+    );
+    markdown_light = markdown_light.default;
+
+    highlight_dark = await import("highlight.js/styles/github-dark.css?inline");
+    highlight_dark = highlight_dark.default;
+
+    highlight_light = await import("highlight.js/styles/default.css?inline");
+    highlight_light = highlight_light.default;
+  });
 </script>
 
 <svelte:head>
   <title>{$_("title")}</title>
   {#if $darkmode}
     {@html `<style>${markdown_dark}</style>`}
-    {@html `<style>${hljs_dark}</style>`}
+    {@html `<style>${highlight_dark}</style>`}
   {:else}
     {@html `<style>${markdown_light}</style>`}
-    {@html `<style>${hljs_light}</style>`}
+    {@html `<style>${highlight_light}</style>`}
   {/if}
-  <!-- <style> -->
-  <!-- {#if darkmode} -->
-  <!--   {@html markdown_dark} -->
-  <!--   {@html hljs} -->
-  <!-- {/if} -->
-  <!-- </style> -->
-  <!-- <link -->
-  <!--   rel="stylesheet" -->
-  <!--   href={$darkmode -->
-  <!--     ? "../../node_modules/highlight.js/styles/github-dark.css" -->
-  <!--     : "../../node_modules/highlight.js/styles/github.css"} -->
-  <!-- /> -->
-  <!-- <link -->
-  <!--   rel="stylesheet" -->
-  <!--   href={$darkmode -->
-  <!--     ? "../../node_modules/github-markdown-css/github-markdown-dark.css" -->
-  <!--     : "../../node_modules/github-markdown-css/github-markdown-light.css"} -->
-  <!-- /> -->
 </svelte:head>
 
 <main class={$darkmode ? "dark" : ""} style={markdown_dark}>

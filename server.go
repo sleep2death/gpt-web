@@ -78,7 +78,7 @@ func createRouter(conf *Config) *gin.Engine {
 	r.Use(CORSMiddleware())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	r.Static("/", "./public/")
+	r.Static("/", "./web/dist")
 	r.POST(conf.API, getChatHandler(conf))
 
 	return r
@@ -95,7 +95,6 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 		}
 
 		// fmt.Println("messages:", req.Messages)
-
 		msgChan, errChan, err := conf.Chat(c.Request.Context(), req)
 
 		if err != nil {

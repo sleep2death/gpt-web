@@ -28,7 +28,7 @@
     >
       <Welcome />
       {#each $messages as { role, content }}
-        {#if role === "assistant" || role === "助手"}
+        {#if role === "assistant"}
           <ChatBulb {content} />
         {:else}
           <ChatBulbUser {content} />

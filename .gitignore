@@ -18,6 +18,7 @@ Thumbs.db
 
 # dot env files
 .env
+.env.*
 
 tmp
 
