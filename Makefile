@@ -2,6 +2,7 @@ GOCMD=go
 GOTEST=$(GOCMD) test
 GOVET=$(GOCMD) vet
 BINARY_NAME=gpt_web
+ENTRY=cmd/main.go
 VERSION?=0.0.0
 SERVICE_PORT?=3000
 DOCKER_REGISTRY?= #if set it should finished by /
@@ -17,26 +18,47 @@ RESET  := $(shell tput -Txterm sgr0)
 
 .PHONY: all test build vendor
 
-all: clean build
+all: clean prepare build zip
 
-## Build:
-build: ## Build your project and put the output binary in out
+prepare:
 	mkdir -p out
-	##
 	yarn --cwd ./web
 	yarn --cwd ./web build
 
 	mkdir -p out/web
 	cp -r ./web/dist out/web/dist
 	## copy .env file
-	cp .env out/.env
+	cp .env.example out/.env.example
 	## build go binary
 	$(GOCMD) mod tidy
-	$(GOCMD) build -o out/$(BINARY_NAME) cmd/main.go
+
+
+## Build:
+build: ## Build your project and put the output binary in out
+	## $(GOCMD) build -o out/$(BINARY_NAME) cmd/main.go
+	GOARCH=amd64 GOOS=darwin  go build -o out/${BINARY_NAME}-darwin-amd64      $(ENTRY)
+	GOARCH=arm64 GOOS=darwin  go build -o out/${BINARY_NAME}-darwin-arm64      $(ENTRY)
+	GOARCH=amd64 GOOS=linux   go build -o out/${BINARY_NAME}-linux-amd64       $(ENTRY)
+	GOARCH=arm64 GOOS=linux   go build -o out/${BINARY_NAME}-linux-arm64       $(ENTRY)
+	GOARCH=amd64 GOOS=windows go build -o out/${BINARY_NAME}-windows-amd64.exe $(ENTRY)
+
+zip:
+	tar -zcvf out/${BINARY_NAME}-darwin-amd64.tar.gz      -C out ${BINARY_NAME}-darwin-amd64      web
+	tar -zcvf out/${BINARY_NAME}-darwin-arm64.tar.gz      -C out ${BINARY_NAME}-darwin-arm64      web 
+	tar -zcvf out/${BINARY_NAME}-linux-amd64.tar.gz       -C out ${BINARY_NAME}-linux-amd64       web 
+	tar -zcvf out/${BINARY_NAME}-linux-arm64.tar.gz       -C out ${BINARY_NAME}-linux-arm64       web 
+
+	zip -r out/${BINARY_NAME}-windows-amd64.zip  out/${BINARY_NAME}-windows-amd64.exe out/web
 
 clean: ## Remove build related file
-	rm -fr ./out
+	rm -rf out/${BINARY_NAME}-* out/web 
 	rm -f ./junit-report.xml checkstyle-report.xml ./coverage.xml ./profile.cov yamllint-checkstyle.xml
+
+dev:
+	yarn --cwd ./web dev & PIDYARN=$!
+	go run cmd/main.go & PIDGO=$!
+	wait $PIDYARN
+	wait $PIDGO
 
 ## Test:
 test: ## Run the tests of the project
