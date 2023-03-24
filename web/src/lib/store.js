@@ -124,7 +124,8 @@ export async function send(opt) {
 
   let response
   try {
-    const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_DEV_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_API)
+    // using absolue url if in development mode, using relative url in production mode
+    const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_API)
     response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",

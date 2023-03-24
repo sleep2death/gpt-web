@@ -32,7 +32,6 @@ prepare:
 	## build go binary
 	$(GOCMD) mod tidy
 
-
 ## Build:
 build: ## Build your project and put the output binary in out
 	## $(GOCMD) build -o out/$(BINARY_NAME) cmd/main.go
@@ -50,14 +49,17 @@ zip:
 
 	zip -r out/${BINARY_NAME}-windows-amd64.zip  out/${BINARY_NAME}-windows-amd64.exe out/web
 
+docker:
+	docker build -t gpt-web .
+
 clean: ## Remove build related file
-	rm -rf out/${BINARY_NAME}-* out/web 
+	rm -rf out/${BINARY_NAME}-* out/web out/main web/dist
 	rm -f ./junit-report.xml checkstyle-report.xml ./coverage.xml ./profile.cov yamllint-checkstyle.xml
 
 dev:
 	yarn --cwd ./web dev & PIDYARN=$!
-	go run cmd/main.go & PIDGO=$!
 	wait $PIDYARN
+	go run cmd/main.go & PIDGO=$!
 	wait $PIDGO
 
 ## Test:

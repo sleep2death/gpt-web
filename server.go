@@ -20,6 +20,7 @@ type Config struct {
 }
 
 func (c *Config) Serve() error {
+	fmt.Printf("gpt-web running on %s | proxy: '%s' | api: '%s' \n", c.Host, c.Proxy, c.API)
 	return createRouter(c).Run(c.Host)
 }
 
@@ -27,8 +28,9 @@ func (c *Config) Serve() error {
 // TH_KEY=sk-***
 // TH_PROXY=127.0.0.1
 func FromEnv() *Config {
+	// load .env file if existed
 	if err := godotenv.Load(); err != nil {
-		panic(err)
+		fmt.Println(".env file not found, using system enviroment")
 	}
 
 	key := os.Getenv("GPTW_KEY")
@@ -36,7 +38,8 @@ func FromEnv() *Config {
 		panic(ErrEmptyKey)
 	}
 
-	proxy := os.Getenv("GPTW_RPOXY")
+	proxy := os.Getenv("GPTW_PROXY")
+	fmt.Println("PROXY:", proxy)
 
 	host := os.Getenv("GPTW_HOST")
 	if host == "" {
@@ -73,6 +76,9 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 func createRouter(conf *Config) *gin.Engine {
+	// set to release mode
+	gin.SetMode("release")
+
 	r := gin.Default()
 
 	r.Use(CORSMiddleware())
@@ -93,7 +99,7 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 			})
 			return
 		}
-
+		fmt.Println("REQ:", req)
 		// fmt.Println("messages:", req.Messages)
 		msgChan, errChan, err := conf.Chat(c.Request.Context(), req)
 

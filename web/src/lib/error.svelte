@@ -14,6 +14,8 @@
       message = $_("err_aborted");
     } else if (err.includes("i/o timeout")) {
       message = $_("err_timeout");
+    } else if (err.includes("proxyconnect")) {
+      message = $_("err_proxy");
     } else if (err === "") {
       message = "";
     } else {
@@ -37,9 +39,9 @@
       <div
         class="dark:bg-amber-800 dark:text-neutral-300 bg-amber-100 rounded-xl px-3 py-2"
       >
-        {message}<a href="#/" on:click={retry}>{$_("retry")}</a>
+        {message}<a href={"#"} on:click={retry}>{$_("retry")}</a>
         {$_("or")}
-        <a href="#/" on:click={cancel}>{$_("cancel")}</a>
+        <a href={"#"} on:click={cancel}>{$_("cancel")}</a>
       </div>
     </div>
   </div>
