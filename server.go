@@ -39,7 +39,6 @@ func FromEnv() *Config {
 	}
 
 	proxy := os.Getenv("GPTW_PROXY")
-	fmt.Println("PROXY:", proxy)
 
 	host := os.Getenv("GPTW_HOST")
 	if host == "" {
@@ -99,7 +98,7 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 			})
 			return
 		}
-		fmt.Println("REQ:", req)
+		fmt.Println("REQ:", req.Messages[len(req.Messages)-1].Content)
 		// fmt.Println("messages:", req.Messages)
 		msgChan, errChan, err := conf.Chat(c.Request.Context(), req)
 

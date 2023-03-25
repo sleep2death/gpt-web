@@ -39,16 +39,16 @@
       <div
         class="dark:bg-amber-800 dark:text-neutral-300 bg-amber-100 rounded-xl px-3 py-2"
       >
-        {message}<a href={"#"} on:click={retry}>{$_("retry")}</a>
+        {message}<button on:click={retry}>{$_("retry")}</button>
         {$_("or")}
-        <a href={"#"} on:click={cancel}>{$_("cancel")}</a>
+        <button on:click={cancel}>{$_("cancel")}</button>
       </div>
     </div>
   </div>
 {/if}
 
 <style>
-  a {
+  button {
     @apply underline text-blue-500 mx-1;
   }
 </style>
