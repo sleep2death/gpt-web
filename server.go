@@ -98,7 +98,12 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 			})
 			return
 		}
-		fmt.Println("REQ:", req.Messages[len(req.Messages)-1].Content)
+
+		l := len(req.Messages)
+		if l > 1 {
+			fmt.Println("REQ:", req.Messages[len(req.Messages)-2])
+		}
+		//
 		// fmt.Println("messages:", req.Messages)
 		msgChan, errChan, err := conf.Chat(c.Request.Context(), req)
 
