@@ -16,6 +16,7 @@
     "github-markdown-css": "^5.2.0",
     "highlight.js": "^11.7.0",
     "marked": "^4.2.12",
+    "marked-linkify-it": "^3.0.1",
     "postcss": "^8.4.21",
     "rollup-plugin-svelte-svg": "^1.0.0-beta.6",
     "svelte": "^3.55.1",

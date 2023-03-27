@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { marked } from "marked";
+  import markedLinkifyIt from "marked-linkify-it";
   import { _ } from "svelte-i18n";
 
   let hljs = null;
@@ -13,6 +14,10 @@
       hljs = null;
     }
   });
+
+  const schemas = {};
+  const options = {};
+  marked.use(markedLinkifyIt(schemas, options));
 
   marked.setOptions({
     highlight: function (code, lang) {
