@@ -125,7 +125,7 @@ export async function send(opt) {
   let response
   try {
     // using absolue url if in development mode, using relative url in production mode
-    const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_API)
+    const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_CHAT_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_CHAT_API)
     response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
@@ -164,6 +164,18 @@ export async function send(opt) {
   } finally {
     controller.set(null)
   }
+}
+
+export async function speak(blob) {
+    const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_SPEAK_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_SPEAK_API)
+
+    const formData = new FormData();
+    formData.append("audio-file", blob, "my-audio.webm");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
 }
 
 export function abort() {

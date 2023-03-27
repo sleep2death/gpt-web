@@ -13,14 +13,15 @@ import (
 )
 
 type Config struct {
-	Key   string // your openai api key
-	Proxy string // proxy address
-	Host  string // server host port
-	API   string // api path
+	Key       string // your openai api key
+	Proxy     string // proxy address
+	Host      string // server host port
+	CHAT_API  string // chat api path
+	SPEAK_API string // speak api path
 }
 
 func (c *Config) Serve() error {
-	fmt.Printf("gpt-web running on %s | proxy: '%s' | api: '%s' \n", c.Host, c.Proxy, c.API)
+	fmt.Printf("[GPT-WEB] running on %s | proxy: '%s' | speak-api: '%s', chat-api: '%s' \n", c.Host, c.Proxy, c.SPEAK_API, c.CHAT_API)
 	return createRouter(c).Run(c.Host)
 }
 
@@ -45,16 +46,22 @@ func FromEnv() *Config {
 		host = ":8081"
 	}
 
-	api := os.Getenv("GPTW_API")
-	if api == "" {
-		api = "/gpt-web/chat"
+	capi := os.Getenv("GPTW_CHAT_API")
+	if capi == "" {
+		capi = "/gpt-web/chat"
+	}
+
+	sapi := os.Getenv("GPTW_SPEAK_API")
+	if sapi == "" {
+		sapi = "/gpt-web/speak"
 	}
 
 	return &Config{
-		Key:   key,
-		Proxy: proxy,
-		Host:  host,
-		API:   api,
+		Key:       key,
+		Proxy:     proxy,
+		Host:      host,
+		CHAT_API:  capi,
+		SPEAK_API: sapi,
 	}
 }
 
@@ -84,7 +91,8 @@ func createRouter(conf *Config) *gin.Engine {
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	r.Static("/", "./web/dist")
-	r.POST(conf.API, getChatHandler(conf))
+	r.POST(conf.CHAT_API, getChatHandler(conf))
+	r.POST("/speak", getSpeakHandler(conf))
 
 	return r
 }
@@ -136,5 +144,19 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 				return false
 			}
 		})
+	}
+}
+
+func getSpeakHandler(conf *Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		file, err := c.FormFile("audio-file")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+			return
+		}
+
+		c.SaveUploadedFile(file, file.Filename)
+		fmt.Println("file received:", file.Filename, file.Size)
+		c.JSON(http.StatusOK, gin.H{})
 	}
 }
