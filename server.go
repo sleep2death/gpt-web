@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/google/uuid"
+
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -155,8 +157,12 @@ func getSpeakHandler(conf *Config) gin.HandlerFunc {
 			return
 		}
 
-		c.SaveUploadedFile(file, file.Filename)
-		fmt.Println("file received:", file.Filename, file.Size)
+		ustr := uuid.New().String()
+		fileName := fmt.Sprintf("%s.webm", ustr)
+
+		c.SaveUploadedFile(file, fileName)
+		fmt.Println("file received:", fileName)
+
 		c.JSON(http.StatusOK, gin.H{})
 	}
 }

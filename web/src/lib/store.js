@@ -166,16 +166,19 @@ export async function send(opt) {
   }
 }
 
-export async function speak(blob) {
-    const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_SPEAK_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_SPEAK_API)
+export async function whisper(blob) {
+  const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_SPEAK_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_SPEAK_API)
 
-    const formData = new FormData();
-    formData.append("audio-file", blob, "my-audio.webm");
+  const formData = new FormData();
+  formData.append("audio_file", blob, "my-audio.webm");
 
-    const resp = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
+  const resp = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+
+  const res = await resp.json()
+  input.update(i => i + res.text)
 }
 
 export function abort() {

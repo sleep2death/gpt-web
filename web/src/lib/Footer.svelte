@@ -4,7 +4,7 @@
   import ActionBtnRight from "./action-btn-right.svelte";
   import Textarea from "./textarea.svelte";
 
-  import { error, speak, input } from "./store";
+  import { error, whisper, input } from "./store";
 
   const mode = writable("normal");
 
@@ -47,7 +47,7 @@
     const blob = new Blob(recordedChunks, { type: "audio/webm; codecs=opus" });
 
     try {
-      await speak(blob);
+      await whisper(blob);
       recordedChunks = [];
     } catch (e) {
       $error = "sound file build failed: " + e;
