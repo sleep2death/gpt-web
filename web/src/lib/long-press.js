@@ -1,46 +1,73 @@
 export function longpress(node) {
-	const TIME_MS = 500;
-  let pressed = false;
-	let timeoutPtr;
+  const TIME_MS = 500;
+  let timeoutPtr;
 
-	function handleMouseDown(e) {
-    if (pressed) return
-    pressed = true
+  window.oncontextmenu = function() { return false; }
 
-	  window.addEventListener('mouseup', handleMouseUp);
-		window.addEventListener('mousemove', handleMoveBeforeLong);
+  let pressed = false
 
-		timeoutPtr = window.setTimeout(() => {
-			window.removeEventListener('mousemove', handleMoveBeforeLong);
-			node.dispatchEvent(new CustomEvent('longpressed'));
-			// TODO - ideally make this not trigger long press again
-			setTimeout(() => node.dispatchEvent(e), 0);
-		}, TIME_MS);
-	}
+  node.addEventListener('mousedown', handleMouseDown);
+  node.addEventListener('touchstart', handleTouchStart);
 
-	function handleMoveBeforeLong(e) {
-		window.clearTimeout(timeoutPtr); 
-		window.removeEventListener('mousemove', handleMoveBeforeLong);
-	}
+  function handleMouseDown() {
+    timeoutPtr = setTimeout(() => {
+      timeoutPtr = null
+      pressed = true
 
-	function handleMouseUp(e) {
-    pressed = false
+      window.addEventListener("mouseup", handleMouseUp);
+      node.dispatchEvent(new CustomEvent('longpressed'));
+    }, TIME_MS);
+  }
 
-		window.clearTimeout(timeoutPtr); 
-		window.removeEventListener('mousemove', handleMoveBeforeLong);
-	  window.removeEventListener('mouseup', handleMouseUp);
+  function handleMouseUp() {
+    if (timeoutPtr) {
+      clearTimeout(timeoutPtr)
+    }
 
-		node.dispatchEvent(new CustomEvent('longpressup'));
-	}
+    if (pressed) {
+      pressed = false
+      node.dispatchEvent(new CustomEvent('longpressup'));
+    }
 
-  // add event listeners
-	node.addEventListener('mousedown', handleMouseDown);
+    window.removeEventListener("mouseup", handleMouseUp);
+  }
 
-	return {
-		destroy: () => {
-			node.removeEventListener('mousedown', handleMouseDown);
-			window.removeEventListener('mouseup', handleMouseUp);
-			window.removeEventListener('mousemove', handleMouseUp);
-		}
-	};
+  function handleTouchEnd() {
+    if (timeoutPtr) {
+      clearTimeout(timeoutPtr)
+    }
+
+    if (pressed) {
+      node.dispatchEvent(new CustomEvent('longpressup'));
+      pressed = false
+    }
+    node.removeEventListener("touchend", handleTouchEnd);
+  }
+
+  function handleTouchStart() {
+    timeoutPtr = setTimeout(() => {
+      timeoutPtr = null
+      pressed = true
+
+      node.addEventListener("touchend", handleTouchEnd);
+      node.dispatchEvent(new CustomEvent('longpressed'));
+    }, TIME_MS);
+  }
+
+  return {
+    destroy: () => {
+      console.log("destroyed")
+      pressed = false
+
+      clearTimeout(timeoutPtr)
+      node.removeEventListener('touchstart', handleTouchStart);
+      node.removeEventListener('touchend', handleTouchStart);
+
+      node.addEventListener('mousedown', handleMouseDown);
+      window.addEventListener('mouseup', handleMouseUp);
+      // node.removeEventListener('mousedown', handleMouseDown);
+      // window.removeEventListener('mouseup', handleMouseUp);
+      // window.removeEventListener('mousemove', handleMouseUp);
+    }
+  };
 }

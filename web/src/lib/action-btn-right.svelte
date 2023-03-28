@@ -1,5 +1,6 @@
 <script>
   import SendIcon from "/src/assets/send-fill.svg?component";
+
   import MicIcon from "/src/assets/mic.svg?component";
   import MicFillIcon from "/src/assets/mic-fill.svg?component";
 
@@ -12,35 +13,36 @@
 </script>
 
 <button
-  class="dark:text-neutral-400 text-stone-500 {mode === 'recording'
-    ? 'active:bg-blue-500'
-    : ''} rounded-full p-2.5 disabled:pointer-events-none"
-  on:click={send}
+  class="dark:text-neutral-400 text-stone-500 {mode === 'normal'
+    ? ''
+    : 'hidden'} p-2"
   use:longpress
   on:longpressed
   on:longpressup
 >
-  {#if mode === "normal"}
-    <div in:scale={{ start: 0.6, easing: cubicOut }}>
-      <MicIcon width="22" height="22" fill="currentColor" viewBox="0 0 16 16" />
-    </div>
-  {:else if mode === "recording"}
-    <div in:scale={{ start: 0.6, easing: cubicOut }} class="text-white">
-      <MicFillIcon
-        width="22"
-        height="22"
-        fill="currentColor"
-        viewBox="0 0 16 16"
-      />
-    </div>
-  {:else}
-    <div in:scale={{ start: 0.6, easing: cubicOut }} class="text-blue-500">
-      <SendIcon
-        width="22"
-        height="22"
-        fill="currentColor"
-        viewBox="0 0 16 16"
-      />
-    </div>
-  {/if}
+  <MicIcon width="22" height="22" fill="currentColor" viewBox="0 0 16 16" />
 </button>
+
+{#if mode === "recording"}
+  <div
+    in:scale={{ start: 0.5, duration: 200 }}
+    class="text-white bg-blue-500 rounded-full p-2"
+  >
+    <MicFillIcon
+      width="22"
+      height="22"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    />
+  </div>
+{/if}
+
+{#if mode === "input"}
+  <button
+    class="text-blue-500 {mode === 'input' ? '' : 'hidden'} p-2"
+    on:click
+    in:scale={{ start: 0.5, duration: 200 }}
+  >
+    <SendIcon width="22" height="22" fill="currentColor" viewBox="0 0 16 16" />
+  </button>
+{/if}

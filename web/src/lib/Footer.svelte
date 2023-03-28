@@ -4,13 +4,14 @@
   import ActionBtnRight from "./action-btn-right.svelte";
   import Textarea from "./textarea.svelte";
 
-  import { error, whisper, input } from "./store";
+  import { error, whisper, input, send } from "./store";
 
   const mode = writable("normal");
 
   const options = { mimeType: "audio/webm" };
   let recordedChunks = [];
   let mediaRecorder = null;
+  let stream = null;
 
   input.subscribe((i) => {
     if (i !== "") {
@@ -23,12 +24,12 @@
   async function onLongPressed() {
     $mode = "recording";
     try {
-      const ms = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: false,
       });
 
-      mediaRecorder = new MediaRecorder(ms, options);
+      mediaRecorder = new MediaRecorder(stream, options);
       mediaRecorder.start();
 
       mediaRecorder.ondataavailable = onRecorderDataAvailable;
@@ -44,18 +45,37 @@
 
   async function onRecorderStop() {
     // console.log(recordedChunks.length);
+
     const blob = new Blob(recordedChunks, { type: "audio/webm; codecs=opus" });
 
     try {
-      await whisper(blob);
-      recordedChunks = [];
+      console.log("sending speak");
+      if (recordedChunks.length > 0) {
+        await whisper(blob);
+        recordedChunks = [];
+      }
     } catch (e) {
+      console.error(e);
       $error = "sound file build failed: " + e;
+    } finally {
+      if (stream) {
+        stream
+          .getTracks() // get all tracks from the MediaStream
+          .forEach((track) => track.stop()); // stop each of them
+      }
+      mediaRecorder.ondataavailable = null;
+      mediaRecorder.onstop = null;
+      mediaRecorder = null;
+
+      if ($input !== "") {
+        $mode = "input";
+      } else {
+        $mode = "normal";
+      }
     }
   }
 
-  function onLongPressedUp() {
-    $mode = "normal";
+  function onTouchEnd() {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
       mediaRecorder.stop();
     }
@@ -74,11 +94,12 @@
     <div class="flex flex-col justify-center w-full">
       <Textarea />
     </div>
-    <div class="py-1 flex flex-col justify-end">
+    <div class="mx-4 py-1 flex flex-col justify-end">
       <ActionBtnRight
         mode={$mode}
         on:longpressed={onLongPressed}
-        on:longpressup={onLongPressedUp}
+        on:longpressup={onTouchEnd}
+        on:click={send}
       />
     </div>
   </div>
