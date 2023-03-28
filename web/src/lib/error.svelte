@@ -19,7 +19,7 @@
     } else if (err === "") {
       message = "";
     } else {
-      message = $_("err_unkown");
+      message = err;
     }
   });
 
