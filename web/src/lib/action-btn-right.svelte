@@ -9,7 +9,7 @@
   export let mode;
 </script>
 
-<div class={mode === "recording" ? "w-36 ml-4" : ""}>
+<div class={mode === "recording" ? "w-32 ml-4" : ""}>
   <button
     class="dark:text-neutral-400 text-stone-500 {mode === 'normal'
       ? ''

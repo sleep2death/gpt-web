@@ -8,7 +8,8 @@
 
   const mode = writable("normal");
 
-  const options = { mimeType: "audio/webm" };
+  let options = { mimeType: "audio/webm" };
+
   let recordedChunks = [];
   let mediaRecorder = null;
   let stream = null;
@@ -24,6 +25,16 @@
   async function onLongPressed() {
     $mode = "recording";
     try {
+      if (MediaRecorder.isTypeSupported('audio/webm; codecs=vp9')) {
+        options = {mimeType: 'audio/webm; codecs=vp9'};
+      } else  if (MediaRecorder.isTypeSupported('audio/webm')) {
+        options = {mimetype: 'audio/webm'};
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        options = {mimetype: 'audio/mp4', videobitspersecond : 50000};
+      } else {
+        throw new Error("mimetype not supported")
+      }
+
       stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: false,
@@ -36,6 +47,7 @@
       mediaRecorder.onstop = onRecorderStop;
     } catch (e) {
       $error = "can't access user's microphone: " + e;
+      stop()
     }
   }
 
@@ -46,7 +58,7 @@
   async function onRecorderStop() {
     // console.log(recordedChunks.length);
 
-    const blob = new Blob(recordedChunks, { type: "audio/webm; codecs=opus" });
+    const blob = new Blob(recordedChunks, { type: options.mimetype });
 
     try {
       console.log("sending speak");
@@ -58,20 +70,20 @@
       console.error(e);
       $error = "sound file build failed: " + e;
     } finally {
-      if (stream) {
-        stream
-          .getTracks() // get all tracks from the MediaStream
-          .forEach((track) => track.stop()); // stop each of them
-      }
-      mediaRecorder.ondataavailable = null;
-      mediaRecorder.onstop = null;
-      mediaRecorder = null;
+      stop()
+    }
+  }
 
-      if ($input !== "") {
-        $mode = "input";
-      } else {
-        $mode = "normal";
-      }
+  function stop() {
+    if (stream) {
+      stream
+        .getTracks() // get all tracks from the MediaStream
+        .forEach((track) => track.stop()); // stop each of them
+    }
+    if ($input !== "") {
+      $mode = "input";
+    } else {
+      $mode = "normal";
     }
   }
 
