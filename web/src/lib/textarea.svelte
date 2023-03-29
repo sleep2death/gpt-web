@@ -1,8 +1,12 @@
 <script>
+  import RecordIcon from "/src/assets/record2.svg?component";
   import { input, send } from "./store.js";
   import { _ } from "svelte-i18n";
+  import { fly } from "svelte/transition";
+  import { cubicIn } from "svelte/easing";
 
   let textarea;
+  export let mode;
 
   input.subscribe((value) => {
     if (textarea && textarea.parentNode) {
@@ -11,26 +15,41 @@
   });
 </script>
 
-<div
-  class="px-4 py-2 dark:bg-black bg-white rounded-2xl relative dark:text-white"
->
-  <div class="grow-wrap">
-    <textarea
-      name="text"
-      id="text"
-      bind:value={$input}
-      bind:this={textarea}
-      class="break-words break-all outline-none bg-transparent"
-      rows={1}
-      placeholder={$_("input_placeholder")}
-      on:keydown={(evt) => {
-        if (evt.ctrlKey && evt.key === "Enter") {
-          send();
-        }
-      }}
+{#if mode === "recording"}
+  <div
+    in:fly={{ y: 20, duration: 150, easing: cubicIn }}
+    class="flex flex-row md:justify-center justify-start items-center bg-stone-300 p-2 rounded-2xl font-semibold text-red-500"
+  >
+    <RecordIcon
+      width="22"
+      height="22"
+      fill="currentColor"
+      viewBox="0 0 16 16"
     />
+    {$_("recording")}
   </div>
-</div>
+{:else}
+  <div
+    class="px-4 h-full flex justify-start items-center dark:bg-black bg-white rounded-2xl relative dark:text-white"
+  >
+    <div class="grow-wrap w-full">
+      <textarea
+        name="text"
+        id="autoComplete"
+        bind:value={$input}
+        bind:this={textarea}
+        class="break-words break-all outline-none bg-transparent"
+        rows={1}
+        placeholder={$_("input_placeholder")}
+        on:keydown={(evt) => {
+          if (evt.ctrlKey && evt.key === "Enter") {
+            send();
+          }
+        }}
+      />
+    </div>
+  </div>
+{/if}
 
 <style>
   .grow-wrap {

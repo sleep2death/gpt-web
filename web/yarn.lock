@@ -212,6 +212,11 @@
     svelte-hmr "^0.15.1"
     vitefu "^0.2.4"
 
+"@tarekraafat/autocomplete.js@^10.2.7":
+  version "10.2.7"
+  resolved "https://registry.yarnpkg.com/@tarekraafat/autocomplete.js/-/autocomplete.js-10.2.7.tgz#dca809890cec322379a2b430632d46a14f9f2f91"
+  integrity sha512-iE+dnXI8/LrTaSORrnNdSyXg/bFCbCpz/R5GUdB3ioW+9PVEhglxNcSDQNeCXtrbRG0kOBFUd4unEiwcmqyn8A==
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
@@ -1214,6 +1219,11 @@ svelte-i18n@^3.6.0:
     intl-messageformat "^9.13.0"
     sade "^1.8.1"
     tiny-glob "^0.2.9"
+
+svelte-loading-spinners@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/svelte-loading-spinners/-/svelte-loading-spinners-0.3.4.tgz#af11d0f9ef0943026415c931900c10fea02a88a5"
+  integrity sha512-vKaW71QMCBcTNijAGc0mUl8k3DQ66iYmp6MB8BMGCXyWk82bTrcLy8FOnSm9fE+8q6TwzD6PLUoYFHt0II93Xw==
 
 svelte-preprocess@^5.0.3:
   version "5.0.3"

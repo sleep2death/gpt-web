@@ -44,7 +44,7 @@ mode.subscribe(m => {
   }
 })
 
-export const lastMessage = derived(messages, $messages => $messages[$messages.length - 1])
+export const lastMessage = derived(messages, $messages => $messages.length > 0 ? $messages[$messages.length - 1] : null)
 
 export async function sendGLM(opt) {
   if (get(controller)) return
@@ -167,6 +167,11 @@ export async function send(opt) {
 }
 
 export async function whisper(blob) {
+  if (get(controller)) return
+
+  controller.set(new AbortController());
+  const { signal } = get(controller);
+
   const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_SPEAK_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_SPEAK_API)
 
   const formData = new FormData();
@@ -175,21 +180,106 @@ export async function whisper(blob) {
   const resp = await fetch(url, {
     method: "POST",
     body: formData,
+    signal
   });
 
   const res = await resp.json()
+  console.log("whisper res:", res)
   input.update(i => i + res.text)
+
+}
+
+export const state = writable("pending")
+let options = { mimeType: "audio/webm" };
+let recordedChunks = [];
+let mediaRecorder = null;
+let stream = null;
+
+function onRecorderDataAvailable(evt) {
+  if (evt.data.size > 0) recordedChunks.push(evt.data);
+}
+
+async function onRecorderStop() {
+  // console.log(recordedChunks.length);
+  const blob = new Blob(recordedChunks, { type: options.mimeType });
+  state.set("loading")
+
+  if (stream) {
+    stream
+      .getTracks() // get all tracks from the MediaStream
+      .forEach((track) => track.stop()); // stop each of them
+  }
+
+  mediaRecorder = null;
+
+  try {
+    if (recordedChunks.length > 0) {
+      await whisper(blob);
+      recordedChunks = [];
+    }
+  } catch (e) {
+    error.set("record uploading failed: " + e)
+  } finally {
+    state.set("pending")
+    controller.set(null)
+  }
+}
+
+export async function stopRecorder() {
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  } else {
+    if (stream) {
+      stream
+        .getTracks() // get all tracks from the MediaStream
+        .forEach((track) => track.stop()); // stop each of them
+    }
+
+    mediaRecorder = null;
+    state.set("pending")
+  }
+}
+
+export async function startRecorder() {
+  state.set("recording")
+  try {
+    if (MediaRecorder.isTypeSupported("audio/webm; codecs=vp9")) {
+      options = { mimeType: "audio/webm; codecs=vp9" };
+    } else if (MediaRecorder.isTypeSupported("audio/webm")) {
+      options = { mimeType: "audio/webm" };
+    } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+      options = { mimeType: "audio/mp4", videobitspersecond: 50000 };
+    } else {
+      throw new Error("sound mimetype not supported");
+    }
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false,
+    });
+
+    mediaRecorder = new MediaRecorder(stream, options);
+    mediaRecorder.start();
+
+    mediaRecorder.ondataavailable = onRecorderDataAvailable;
+    mediaRecorder.onstop = onRecorderStop;
+  } catch (e) {
+    error.set("can't access user's microphone: " + e)
+    stop();
+  }
 }
 
 export function abort() {
   get(controller).abort();
-  removeLastEmptyResponse();
+  if (get(state) === "pending") {
+    removeLastEmptyResponse();
+  }
 }
 
 export function removeLastEmptyResponse() {
   const msg = get(lastMessage)
   // if content of the assistant is empty, remove it
-  if (msg.role === ASSISTANT && msg.content === "") {
+  if (msg && msg.role === ASSISTANT && msg.content === "") {
     messages.update(messages => {
       messages.pop()
       return messages

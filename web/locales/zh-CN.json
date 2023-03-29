@@ -14,9 +14,18 @@
   "dark_mode": "黑暗模式",
   "input_placeholder": "请问我任何问题...",
   "404_notfound": "服务未找到。",
+  "err_notfinished": "对话未结束。",
+  "err_notfound": "服务未找到。",
+  "err_proxy": "代理服务错误。",
+  "err_invalidkey": "错误的OpenAI API Key。",
+  "err_aborted": "请求被终止。",
+  "err_record_uploading": "录音上传错误。",
+  "err_timeout": "请求超时。",
+  "err_unkown": "未知错误。",
   "or": "或",
   "retry": "重试",
   "cancel": "取消",
   "ignore": "忽略",
-  "loading": "正在加载..."
+  "recording": "正在录制",
+  "loading": "正在加载"
 }

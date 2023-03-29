@@ -4,67 +4,50 @@ export function longpress(node) {
 
   window.oncontextmenu = function() { return false; }
 
-  let pressed = false
-
   node.addEventListener('mousedown', handleMouseDown);
   node.addEventListener('touchstart', handleTouchStart);
 
-  function handleMouseDown() {
+  window.addEventListener("mouseup", handleMouseUp);
+  window.addEventListener("touchend", handleMouseUp);
+
+  function handleMouseDown(evt) {
+    if (timeoutPtr) {
+      clearTimeout(timeoutPtr)
+    }
+
     timeoutPtr = setTimeout(() => {
       timeoutPtr = null
-      pressed = true
 
-      window.addEventListener("mouseup", handleMouseUp);
       node.dispatchEvent(new CustomEvent('longpressed'));
+      console.log(evt)
     }, TIME_MS);
   }
 
   function handleMouseUp() {
-    if (timeoutPtr) {
-      clearTimeout(timeoutPtr)
-    }
-
-    if (pressed) {
-      pressed = false
-      node.dispatchEvent(new CustomEvent('longpressup'));
-    }
-
-    window.removeEventListener("mouseup", handleMouseUp);
+    clearTimeout(timeoutPtr)
   }
 
   function handleTouchEnd() {
-    if (timeoutPtr) {
-      clearTimeout(timeoutPtr)
-    }
-
-    if (pressed) {
-      node.dispatchEvent(new CustomEvent('longpressup'));
-      pressed = false
-    }
-    node.removeEventListener("touchend", handleTouchEnd);
+    clearTimeout(timeoutPtr)
   }
 
-  function handleTouchStart() {
+  function handleTouchStart(evt) {
     timeoutPtr = setTimeout(() => {
       timeoutPtr = null
-      pressed = true
 
       node.addEventListener("touchend", handleTouchEnd);
-      node.dispatchEvent(new CustomEvent('longpressed'));
+      node.dispatchEvent(new CustomEvent('longpressed', { detail: evt.touches[0] }));
     }, TIME_MS);
   }
 
   return {
     destroy: () => {
-      console.log("destroyed")
-      pressed = false
-
       clearTimeout(timeoutPtr)
       node.removeEventListener('touchstart', handleTouchStart);
-      node.removeEventListener('touchend', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchStart);
 
-      node.addEventListener('mousedown', handleMouseDown);
-      window.addEventListener('mouseup', handleMouseUp);
+      node.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
       // node.removeEventListener('mousedown', handleMouseDown);
       // window.removeEventListener('mouseup', handleMouseUp);
       // window.removeEventListener('mousemove', handleMouseUp);

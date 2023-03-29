@@ -18,11 +18,13 @@
   "err_proxy": "Proxy not connected.",
   "err_invalidkey": "OpenAI API key incorrect.",
   "err_aborted": "Request aborted.",
+  "err_record_uploading": "Record uploading error.",
   "err_timeout": "Request timeout.",
   "err_unkown": "Unkown Error.",
   "or": "or",
   "retry": "RETRY",
   "cancel": "CANCEL",
   "ignore": "IGNORE",
-  "loading": "LOADING..."
+  "loading": "LOADING",
+  "recording": "RECORDING"
 }
