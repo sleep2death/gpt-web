@@ -1,4 +1,5 @@
 import { writable, get, derived } from "svelte/store"
+import { search, fuseResult } from "./fuse"
 
 export const SYSTEM = "system"
 export const ASSISTANT = "assistant"
@@ -6,6 +7,50 @@ export const USER = "user"
 
 // input string
 export const input = writable("")
+
+export const suggestionIndex = writable(0)
+
+input.subscribe(inp => {
+  inp = inp.trim()
+  if (inp.startsWith("/")) {
+    suggestionIndex.set(0)
+    search(inp.substring(1))
+  } else {
+    fuseResult.set(null)
+  }
+})
+
+export const suggestions = derived(fuseResult, ($fuseResult) => {
+  if (!$fuseResult) {
+    return null;
+  }
+  let count = 0
+  return $fuseResult.reduce((r, a) => {
+    if (a.item) {
+      a.item.index = count
+      r[a.item.category] = r[a.item.category] || [];
+      r[a.item.category].push(a.item);
+      count++
+    }
+    return r;
+  }, Object.create(null));
+});
+
+export function addCommand(cmd) {
+  input.set(`<span data-prompt="${cmd.value}" class="bg-lime-200 dark:bg-purple-500 mr-2 p-1 rounded text-sm" contenteditable="false"><img src=${cmd.icon} class="inline-flex mr-1 text-white"/><div class="inline-flex" contenteditable="false">${cmd.command}</div></span>&nbsp`)
+}
+
+function valideCommand(input) {
+  const reg = /<span data-prompt=(".+?").+?&nbsp;(.+)/g
+  const res = reg.exec(input)
+
+  if (!res || res.length !== 3) {
+    return ""
+  }
+
+  const str = res[1].replace(/\${input}/, res[2])
+  return str.substring(1, str.length - 1)
+}
 
 // response string
 export const resp = writable("")
@@ -99,6 +144,9 @@ export async function send(opt) {
     return
   }
 
+  const cmd = valideCommand(inputValue)
+  inputValue = cmd !== "" ? cmd : inputValue
+
   // console.log(response.ok, response.statusText)
   let oMsg
   if (opt && opt["error_continue"] === true) {
@@ -123,6 +171,8 @@ export async function send(opt) {
   const { signal } = get(controller);
 
   let response
+  state.set("loading")
+
   try {
     // using absolue url if in development mode, using relative url in production mode
     const url = import.meta.env.MODE === "development" ? import.meta.env.GPTW_CHAT_API : (document.URL.replace(/\/$/, "") + import.meta.env.GPTW_CHAT_API)
@@ -162,6 +212,7 @@ export async function send(opt) {
     console.error(e)
     error.set(`<${response && response.status ? response.status : ""}> <error ${e.toString()}>`)
   } finally {
+    state.set("pending")
     controller.set(null)
   }
 }

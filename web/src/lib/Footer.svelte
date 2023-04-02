@@ -4,7 +4,7 @@
   import ActionGroupRight from "./action-group-right.svelte";
 
   import { startRecorder, stopRecorder, state, abort } from "./store";
-  import ActionBtnLeft from "./action-btn-left.svelte";
+  import ActionBtnLeft from "./action-group-left.svelte";
 </script>
 
 <div class="absolute z-20 md:pb-8 md:px-16 bottom-0 w-full flex justify-center">

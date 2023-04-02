@@ -15,6 +15,7 @@
   "input_placeholder": "Ask me anything...",
   "err_notfinished": "Response not finished.",
   "err_notfound": "Service not found.",
+  "err_api_notfound": "OpenAI API not found.",
   "err_proxy": "Proxy not connected.",
   "err_invalidkey": "OpenAI API key incorrect.",
   "err_aborted": "Request aborted.",

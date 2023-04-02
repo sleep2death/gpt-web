@@ -14,6 +14,9 @@
     } else if (err.includes("incorrect api key")) {
       message = $_("err_invalidkey");
       canRetry = true;
+    } else if (err.includes("https://api.openai.com/")) {
+      message = $_("err_api_notfound");
+      canRetry = true;
     } else if (err.includes("record uploading failed:")) {
       message = $_("err_record_uploading");
       canRetry = false;
