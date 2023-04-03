@@ -2,10 +2,16 @@ package gpt_web
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -20,6 +26,10 @@ type Config struct {
 	Host      string // server host port
 	CHAT_API  string // chat api path
 	SPEAK_API string // speak api path
+
+	XF_API_URL    string
+	XF_API_SECRET string
+	XF_API_KEY    string
 }
 
 func (c *Config) Serve() error {
@@ -58,12 +68,19 @@ func FromEnv() *Config {
 		sapi = "/gpt-web/speak"
 	}
 
+	xf_url := os.Getenv("GPTW_XF_API_URL")
+	xf_secret := os.Getenv("GPTW_XF_API_SECRET")
+	xf_key := os.Getenv("GPTW_XF_API_KEY")
+
 	return &Config{
-		Key:       key,
-		Proxy:     proxy,
-		Host:      host,
-		CHAT_API:  capi,
-		SPEAK_API: sapi,
+		Key:           key,
+		Proxy:         proxy,
+		Host:          host,
+		CHAT_API:      capi,
+		SPEAK_API:     sapi,
+		XF_API_URL:    xf_url,
+		XF_API_SECRET: xf_secret,
+		XF_API_KEY:    xf_key,
 	}
 }
 
@@ -93,8 +110,11 @@ func createRouter(conf *Config) *gin.Engine {
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	r.Static("/", "./web/dist")
+
 	r.POST(conf.CHAT_API, getChatHandler(conf))
+
 	r.POST("/speak", getSpeakHandler(conf))
+	r.POST("/xunfei", getWebsocketURL(conf))
 
 	return r
 }
@@ -146,6 +166,53 @@ func getChatHandler(conf *Config) gin.HandlerFunc {
 				return false
 			}
 		})
+	}
+}
+
+// xunfei auth url
+func assembleAuthUrl(hosturl string, apiKey, apiSecret string) string {
+	ul, err := url.Parse(hosturl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//签名时间
+	date := time.Now().UTC().Format(time.RFC1123)
+	//date = "Tue, 28 May 2019 09:10:42 MST"
+	//参与签名的字段 host ,date, request-line
+	signString := []string{"host: " + ul.Host, "date: " + date, "GET " + ul.Path + " HTTP/1.1"}
+	//拼接签名字符串
+	sgin := strings.Join(signString, "\n")
+	fmt.Println(sgin)
+	//签名结果
+	sha := HmacWithShaTobase64("hmac-sha256", sgin, apiSecret)
+	fmt.Println(sha)
+	//构建请求参数 此时不需要urlencoding
+	authUrl := fmt.Sprintf("hmac username=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"", apiKey,
+		"hmac-sha256", "host date request-line", sha)
+	//将请求参数使用base64编码
+	authorization := base64.StdEncoding.EncodeToString([]byte(authUrl))
+
+	v := url.Values{}
+	v.Add("host", ul.Host)
+	v.Add("date", date)
+	v.Add("authorization", authorization)
+	//将编码后的字符串url encode后添加到url后面
+	callurl := hosturl + "?" + v.Encode()
+	return callurl
+}
+
+func HmacWithShaTobase64(algorithm, data, key string) string {
+	mac := hmac.New(sha256.New, []byte(key))
+	mac.Write([]byte(data))
+	encodeData := mac.Sum(nil)
+	return base64.StdEncoding.EncodeToString(encodeData)
+}
+
+var hostUrl = "wss://iat-api.xfyun.cn/v2/iat"
+
+func getWebsocketURL(conf *Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"url": assembleAuthUrl(hostUrl, conf.XF_API_KEY, conf.XF_API_SECRET)})
 	}
 }
 

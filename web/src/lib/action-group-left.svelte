@@ -3,7 +3,8 @@
 
   import { scale } from "svelte/transition";
   import { cubicIn } from "svelte/easing";
-  import { input, suggestions, suggestionIndex } from "./store";
+  import { input, suggestions, suggestionIndex, addCommand } from "./store";
+  import { fuseResult } from "./fuse";
 </script>
 
 <div class="flex flex-col justify-end items-center p-2 relative z-10">
@@ -19,7 +20,7 @@
     >
       {#each Object.entries($suggestions) as [key, s]}
         <li
-          class="w-72 flex flex-col items-start cursor-default p-2 border-b border-stone-300 last:border-none w-full"
+          class="w-72 flex flex-col items-start cursor-default p-2 border-b border-stone-300 last:border-none"
         >
           <div class="text-xs pb-1">
             {key}
@@ -30,12 +31,15 @@
                 <button
                   class="flex flex-row flex-start items-center p-1 w-full rounded {f.index ===
                   $suggestionIndex
-                    ? 'bg-stone-200'
+                    ? 'bg-stone-200 dark:bg-stone-100'
                     : ''}"
                   on:click={() => {
-                    $input = f.value;
-                    // send();
-                    // console.log($current.options);
+                    // $input = f.value;
+                    addCommand($fuseResult[$suggestionIndex].item);
+                  }}
+                  on:focus={() => {}}
+                  on:mouseover={() => {
+                    $suggestionIndex = f.index;
                   }}
                 >
                   <img
