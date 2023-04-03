@@ -1,39 +1,42 @@
-import TransWorker from './transcode.worker.js'
-const transWorker = new TransWorker()
+// import TransWorker from './transcode.worker.js'
+const TransWorker = await import('./transcode.worker.js?worker')
+let transWorker = new TransWorker.default()
 
-class IatRecorder {
+class IatRecorder extends EventTarget {
   constructor(url) {
+    super()
     let self = this
+
     this.status = 'null'
     this.url = url
     this.language = 'zh_cn'
     this.accent = 'mandarin'
-    this.appId = import.meta.env.GPTW_XF_APPID
+    this.appId = import.meta.env.GPTW_XF_APP
+
     // 记录音频数据
     this.audioData = []
     // 记录听写结果
     this.resultText = ''
     // wpgs下的听写结果需要中间状态辅助记录
     this.resultTextTemp = ''
+
     transWorker.onmessage = function(event) {
       self.audioData.push(...event.data)
     }
   }
   // 修改录音听写状态
   setStatus(status) {
-    this.onWillStatusChange && this.status !== status && this.onWillStatusChange(this.status, status)
     this.status = status
   }
+
   setResultText({ resultText, resultTextTemp } = {}) {
-    this.onTextChange && this.onTextChange(resultTextTemp || resultText || '')
+    const evt = new CustomEvent("textchange", { detail: (resultTextTemp || resultText || '') })
+    this.dispatchEvent(evt)
+    // this.onTextChange && this.onTextChange(resultTextTemp || resultText || '')
     resultText !== undefined && (this.resultText = resultText)
     resultTextTemp !== undefined && (this.resultTextTemp = resultTextTemp)
   }
-  // 修改听写参数
-  setParams({ language, accent } = {}) {
-    language && (this.language = language)
-    accent && (this.accent = accent)
-  }
+  //
   // 连接websocket
   connectWebSocket() {
     let iatWS
@@ -61,7 +64,9 @@ class IatRecorder {
       this.recorderStop()
     }
     iatWS.onclose = e => {
-      this.recorderStop()
+      // this.recorderStop()
+      const evt = new CustomEvent("close", {})
+      this.dispatchEvent(evt)
     }
   }
   // 初始化浏览器录音
@@ -125,13 +130,14 @@ class IatRecorder {
     // 获取浏览器录音权限成功的回调
     let getMediaSuccess = stream => {
       console.log('getMediaSuccess')
+      this.stream = stream
       // 创建一个用于通过JavaScript直接处理音频
       this.scriptProcessor = this.audioContext.createScriptProcessor(0, 1, 1)
 
       this.scriptProcessor.onaudioprocess = e => {
         // 去处理音频数据
         if (this.status === 'ing') {
-          // transWorker.postMessage(e.inputBuffer.getChannelData(0))
+          transWorker.postMessage(e.inputBuffer.getChannelData(0))
         }
       }
       // 创建一个新的MediaStreamAudioSourceNode 对象，使来自MediaStream的音频可以被播放和操作
@@ -144,7 +150,6 @@ class IatRecorder {
 
     let getMediaFail = (e) => {
       alert('请求麦克风失败')
-      console.log(e)
       this.audioContext && this.audioContext.close()
       this.audioContext = undefined
       // 关闭websocket
@@ -165,7 +170,7 @@ class IatRecorder {
   recorderStop() {
     // safari下suspend后再次resume录音内容将是空白，设置safari下不做suspend
     if (!(/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))) {
-      this.audioContext && this.audioContext.suspend()
+      this.audioContext && this.audioContext.close()
     }
     this.setStatus('end')
   }
@@ -250,6 +255,7 @@ class IatRecorder {
   result(resultData) {
     // 识别结束
     let jsonData = JSON.parse(resultData)
+
     if (jsonData.data && jsonData.data.result) {
       let data = jsonData.data.result
       let str = ''
@@ -277,6 +283,7 @@ class IatRecorder {
         })
       }
     }
+
     if (jsonData.code === 0 && jsonData.data.status === 2) {
       this.webSocket.close()
     }
@@ -291,6 +298,12 @@ class IatRecorder {
   }
   stop() {
     this.recorderStop()
+    if (this.stream) {
+      this.stream
+        .getTracks() // get all tracks from the MediaStream
+        .forEach((track) => track.stop()); // stop each of them
+    }
+
   }
 }
 

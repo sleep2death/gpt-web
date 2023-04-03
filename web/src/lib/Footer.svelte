@@ -3,8 +3,34 @@
   import { _ } from "svelte-i18n";
   import ActionGroupRight from "./action-group-right.svelte";
 
-  import { startRecorder, stopRecorder, state, abort } from "./store";
+  import { input, state } from "./store";
   import ActionBtnLeft from "./action-group-left.svelte";
+  import IatRecorder from "./recorder";
+
+  let rc;
+  async function onRecordStart() {
+    const resp = await fetch(import.meta.env.GPTW_XF_API_URL, {
+      method: "POST",
+    });
+
+    const api = await resp.json();
+    rc = new IatRecorder(api.url);
+    rc.addEventListener("textchange", (evt) => {
+      $input = evt.detail;
+    });
+
+    rc.addEventListener("close", () => {
+      $state = "pending";
+    });
+
+    rc.start();
+    $state = "recording";
+  }
+
+  function onRecordStop() {
+    rc.stop();
+    $state = "loading";
+  }
 </script>
 
 <div class="absolute z-20 md:pb-8 md:px-16 bottom-0 w-full flex justify-center">
@@ -17,9 +43,8 @@
     </div>
     <ActionGroupRight
       mode={$state}
-      on:record_start={startRecorder}
-      on:record_stop={stopRecorder}
-      on:loading_stop={abort}
+      on:record_start={onRecordStart}
+      on:record_stop={onRecordStop}
     />
   </div>
 </div>

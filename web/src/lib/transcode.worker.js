@@ -1,11 +1,11 @@
+
 /*
  * @Autor: lycheng
  * @Date: 2020-01-07 08:51:50
  */
 
-export default function TransWorker() {
+(function() {
   self.onmessage = function(e) {
-    console.log("on message")
     transAudioData.transcode(e.data)
   }
 
@@ -45,4 +45,4 @@ export default function TransWorker() {
       return dataView
     },
   }
-}
+})()

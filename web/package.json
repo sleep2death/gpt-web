@@ -19,6 +19,7 @@
     "marked": "^4.2.12",
     "marked-linkify-it": "^3.0.1",
     "postcss": "^8.4.21",
+    "recorder-core": "^1.2.23020100",
     "rollup-plugin-svelte-svg": "^1.0.0-beta.6",
     "svelte": "^3.55.1",
     "svelte-i18n": "^3.6.0",
