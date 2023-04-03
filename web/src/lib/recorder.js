@@ -1,9 +1,7 @@
 // import TransWorker from './transcode.worker.js'
-const TransWorker = await import('./transcode.worker.js?worker')
-let transWorker = new TransWorker.default()
 
 class IatRecorder extends EventTarget {
-  constructor(url) {
+  constructor(url, worker) {
     super()
     let self = this
 
@@ -20,7 +18,9 @@ class IatRecorder extends EventTarget {
     // wpgs下的听写结果需要中间状态辅助记录
     this.resultTextTemp = ''
 
-    transWorker.onmessage = function(event) {
+    this.worker = worker
+
+    this.worker.onmessage = function(event) {
       self.audioData.push(...event.data)
     }
   }
@@ -137,7 +137,7 @@ class IatRecorder extends EventTarget {
       this.scriptProcessor.onaudioprocess = e => {
         // 去处理音频数据
         if (this.status === 'ing') {
-          transWorker.postMessage(e.inputBuffer.getChannelData(0))
+          this.worker.postMessage(e.inputBuffer.getChannelData(0))
         }
       }
       // 创建一个新的MediaStreamAudioSourceNode 对象，使来自MediaStream的音频可以被播放和操作
@@ -297,13 +297,13 @@ class IatRecorder extends EventTarget {
     this.setResultText({ resultText: '', resultTextTemp: '' })
   }
   stop() {
-    this.recorderStop()
     if (this.stream) {
       this.stream
         .getTracks() // get all tracks from the MediaStream
         .forEach((track) => track.stop()); // stop each of them
     }
 
+    this.recorderStop()
   }
 }
 

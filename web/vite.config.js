@@ -16,5 +16,5 @@ export default defineConfig({
   }), svg({}),],
   build: {
     emptyOutDir: true
-  }
+  },
 })

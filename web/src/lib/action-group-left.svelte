@@ -3,7 +3,7 @@
 
   import { scale } from "svelte/transition";
   import { cubicIn } from "svelte/easing";
-  import { input, suggestions, suggestionIndex, addCommand } from "./store";
+  import { suggestions, suggestionIndex, addCommand } from "./store";
   import { fuseResult } from "./fuse";
 </script>
 
@@ -43,14 +43,14 @@
                   }}
                 >
                   <img
-                    src="/public/{f.icon}"
+                    src="/{f.icon}"
                     alt={f.label}
                     class="mr-1 text-stone-500"
                   />
                   <div class="flex-grow flex flex-start">{f.label}</div>
                   {#if f.index === $suggestionIndex}
                     <img
-                      src="/public/arrow-return-left.svg"
+                      src="/arrow-return-left.svg"
                       alt={f.label}
                       class="text-stone-500"
                     />

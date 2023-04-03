@@ -28,7 +28,7 @@ export const fuseResult = writable(null)
 
 export async function search(pattern) {
   if (fuse === null) {
-    const res = await fetch(`/public/prompts-${getLocaleFromNavigator()}.json`)
+    const res = await fetch(`/prompts-${getLocaleFromNavigator()}.json`)
     collection = await res.json()
     fuse = new Fuse(collection, options);
   }

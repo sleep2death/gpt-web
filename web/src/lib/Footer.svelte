@@ -3,18 +3,27 @@
   import { _ } from "svelte-i18n";
   import ActionGroupRight from "./action-group-right.svelte";
 
-  import { input, state } from "./store";
+  import { controller, input, state } from "./store";
   import ActionBtnLeft from "./action-group-left.svelte";
   import IatRecorder from "./recorder";
 
   let rc;
   async function onRecordStart() {
-    const resp = await fetch(import.meta.env.GPTW_XF_API_URL, {
+    const url =
+      import.meta.env.MODE === "development"
+        ? "http://" + import.meta.env.GPTW_HOST + "/xunfei"
+        : "/xunfei";
+
+    const resp = await fetch(url, {
       method: "POST",
     });
-
     const api = await resp.json();
-    rc = new IatRecorder(api.url);
+
+    const TransWorker = await import("./transcode.worker.js?worker");
+    let transWorker = new TransWorker.default();
+
+    rc = new IatRecorder(api.url, transWorker);
+
     rc.addEventListener("textchange", (evt) => {
       $input = evt.detail;
     });
@@ -31,6 +40,13 @@
     rc.stop();
     $state = "loading";
   }
+
+  function onAbort() {
+    if ($controller && $state === "loading") {
+      $controller.abort();
+    } else if (!$controller && $state === "loading") {
+    }
+  }
 </script>
 
 <div class="absolute z-20 md:pb-8 md:px-16 bottom-0 w-full flex justify-center">
@@ -45,6 +61,7 @@
       mode={$state}
       on:record_start={onRecordStart}
       on:record_stop={onRecordStop}
+      on:loading_stop={onAbort}
     />
   </div>
 </div>

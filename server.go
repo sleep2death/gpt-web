@@ -13,8 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -24,22 +22,15 @@ type Config struct {
 	Key       string // your openai api key
 	Proxy     string // proxy address
 	Host      string // server host port
-	CHAT_API  string // chat api path
-	SPEAK_API string // speak api path
-
-	XF_API_URL    string
-	XF_API_SECRET string
-	XF_API_KEY    string
+	XF_SECRET string
+	XF_KEY    string
 }
 
 func (c *Config) Serve() error {
-	fmt.Printf("[GPT-WEB] running on %s | proxy: '%s' | speak-api: '%s', chat-api: '%s' \n", c.Host, c.Proxy, c.SPEAK_API, c.CHAT_API)
+	fmt.Printf("[GPT-WEB] running on %s | proxy: '%s'\n", c.Host, c.Proxy)
 	return createRouter(c).Run(c.Host)
 }
 
-// read config keys in .env file
-// TH_KEY=sk-***
-// TH_PROXY=127.0.0.1
 func FromEnv() *Config {
 	// load .env file if existed
 	if err := godotenv.Load(); err != nil {
@@ -58,29 +49,15 @@ func FromEnv() *Config {
 		host = ":8081"
 	}
 
-	capi := os.Getenv("GPTW_CHAT_API")
-	if capi == "" {
-		capi = "/gpt-web/chat"
-	}
-
-	sapi := os.Getenv("GPTW_SPEAK_API")
-	if sapi == "" {
-		sapi = "/gpt-web/speak"
-	}
-
-	xf_url := os.Getenv("GPTW_XF_API_URL")
 	xf_secret := os.Getenv("GPTW_XF_API_SECRET")
 	xf_key := os.Getenv("GPTW_XF_API_KEY")
 
 	return &Config{
-		Key:           key,
-		Proxy:         proxy,
-		Host:          host,
-		CHAT_API:      capi,
-		SPEAK_API:     sapi,
-		XF_API_URL:    xf_url,
-		XF_API_SECRET: xf_secret,
-		XF_API_KEY:    xf_key,
+		Key:       key,
+		Proxy:     proxy,
+		Host:      host,
+		XF_SECRET: xf_secret,
+		XF_KEY:    xf_key,
 	}
 }
 
@@ -111,9 +88,7 @@ func createRouter(conf *Config) *gin.Engine {
 
 	r.Static("/", "./web/dist")
 
-	r.POST(conf.CHAT_API, getChatHandler(conf))
-
-	r.POST("/speak", getSpeakHandler(conf))
+	r.POST("/chat", getChatHandler(conf))
 	r.POST("/xunfei", getWebsocketURL(conf))
 
 	return r
@@ -212,24 +187,6 @@ var hostUrl = "wss://iat-api.xfyun.cn/v2/iat"
 
 func getWebsocketURL(conf *Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"url": assembleAuthUrl(hostUrl, conf.XF_API_KEY, conf.XF_API_SECRET)})
-	}
-}
-
-func getSpeakHandler(conf *Config) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		file, err := c.FormFile("audio-file")
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-			return
-		}
-
-		ustr := uuid.New().String()
-		fileName := fmt.Sprintf("%s.webm", ustr)
-
-		c.SaveUploadedFile(file, fileName)
-		fmt.Println("file received:", fileName)
-
-		c.JSON(http.StatusOK, gin.H{})
+		c.JSON(http.StatusOK, gin.H{"url": assembleAuthUrl(hostUrl, conf.XF_KEY, conf.XF_SECRET)})
 	}
 }
