@@ -36,6 +36,7 @@
     >
       <div class="markdown-body break-words break-all dark:text-neutral-200">
         {#if content && content !== ""}
+          <!-- {content} -->
           {@html marked.parse(content)}
         {:else}
           <p>{$_("loading")}</p>

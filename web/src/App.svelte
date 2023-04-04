@@ -37,7 +37,7 @@
 
 <main class={$darkmode ? "dark" : ""} style={markdown_dark}>
   <div
-    class="w-full h-screen relative from-blue-500/50 via-lime-500/50 to-yellow-500/50 bg-lime-200 dark:bg-black dark:from-red-500/30 dark:via-lime-500/30 dark:to-purple-500/30"
+    class="w-full h-screen relative from-blue-500/50 via-lime-500/50 to-yellow-500/50 bg-lime-200 dark:bg-black dark:from-red-500/30 dark:via-lime-500/30 dark:to-purple-500/30 overflow-x-clip"
   >
     <div
       class="absolute w-full h-screen bg-gradient-to-bl img-cover pointer-events-none"
