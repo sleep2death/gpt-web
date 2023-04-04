@@ -49,8 +49,8 @@ func FromEnv() *Config {
 		host = ":8081"
 	}
 
-	xf_secret := os.Getenv("GPTW_XF_API_SECRET")
-	xf_key := os.Getenv("GPTW_XF_API_KEY")
+	xf_secret := os.Getenv("GPTW_XF_SECRET")
+	xf_key := os.Getenv("GPTW_XF_KEY")
 
 	return &Config{
 		Key:       key,

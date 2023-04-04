@@ -36,7 +36,7 @@
 </script>
 
 <div
-  class="flex flex-col justify-end items-center p-2 overflow-clip"
+  class="flex flex-col justify-end items-center px-4 py-2 md:px-2 overflow-clip"
   use:GlobalMouseUp
   on:stopped={onStopped}
 >

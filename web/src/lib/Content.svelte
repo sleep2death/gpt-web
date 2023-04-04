@@ -30,8 +30,15 @@
       {#each $messages as { role, content }}
         {#if role === "assistant"}
           <ChatBulb {content} />
-        {:else}
+        {:else if role === "user" || role === "system"}
           <ChatBulbUser {content} />
+        {:else if role === "splitter"}
+          <h2
+            class="w-full text-center border-b border-stone-500"
+            style="margin: 10px 0 20px; "
+          >
+            <span class="bg-white" style="padding:0 10px;">THIS IS A TEST</span>
+          </h2>
         {/if}
       {/each}
       <Error />

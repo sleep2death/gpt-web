@@ -30,6 +30,7 @@ export const suggestions = derived(fuseResult, ($fuseResult) => {
       a.item.index = count
       r[a.item.category] = r[a.item.category] || [];
       r[a.item.category].push(a.item);
+
       count++
     }
     return r;
@@ -59,19 +60,19 @@ export const resp = writable("")
 export const messages = writable([])
 
 // request abort controller
-export var controller = writable(null)
+export const controller = writable(null)
 
 // error message
-export var error = writable("")
+export const error = writable("")
 
 // dark mode
-export var darkmode = writable(false)
+export const darkmode = writable(false)
 
 // mode
 let temperature = 0.01
 let top_p = 0.7
 
-export var mode = writable("balanced")
+export const mode = writable("balanced")
 mode.subscribe(m => {
   switch (m) {
     case "creative":
@@ -91,47 +92,21 @@ mode.subscribe(m => {
 
 export const lastMessage = derived(messages, $messages => $messages.length > 0 ? $messages[$messages.length - 1] : null)
 
-export async function sendGLM(opt) {
-  if (get(controller)) return
-  let inputValue = get(input).trim()
-
-  const isInit = get(messages).length === 0
-
-  const iMsg = { role: isInit ? "系统" : "用户", content: inputValue }
-
-  const oMsg = { role: "助手", content: "" }
-  messages.update(m => [...m, iMsg, oMsg])
-
-  // reset
-  input.set("")
-  error.set("")
-
-  controller.set(new AbortController());
-  const { signal } = get(controller);
-
-
-  const query = get(messages).reduce((q, item) => q + `${item.role}: ${item.content}\n`, "")
-  console.log("query:", get(messages), query)
-
-  try {
-    const response = await fetch("http://localhost:8189/gpt-glm/chat", {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query, max_length: 4096, top_p: 0.7, temperature: 0.9 }), // body data type must match "Content-Type" header
-      signal
-    })
-    const res = await response.json()
-    oMsg.content += res.response
-    messages.update(m => m)
-  } catch (e) {
-    console.error(e)
-    error.set(e.toString())
-  } finally {
-    controller.set(null)
-  }
+export function split() {
+  messages.update(m => [...m, { role: "splitter", messages: "" }])
 }
+
+export const lastSection = derived(messages, $messages => {
+  const result = []
+  for (let i = $messages.length - 1; i > 0; i--) {
+    if ($messages[i].role !== "splitter") {
+      result.unshift($messages[i])
+    } else {
+      break
+    }
+  }
+  return result
+})
 
 export async function send(opt) {
   if (get(controller)) return
@@ -162,7 +137,6 @@ export async function send(opt) {
     }
   }
 
-
   // reset
   input.set("")
   error.set("")
@@ -184,7 +158,7 @@ export async function send(opt) {
         "Accept": "text/event-stream",
         "Connection": "keep-alive",
       },
-      body: JSON.stringify({ top_p, temperature, messages: [...get(messages)] }), // body data type must match "Content-Type" header
+      body: JSON.stringify({ top_p, temperature, messages: [...get(lastSection)] }), // body data type must match "Content-Type" header
       signal
     })
 
@@ -201,7 +175,6 @@ export async function send(opt) {
       if (done) break;
       const incoming = dec.decode(value)
       if (incoming.includes("ERROR>>>")) {
-        console.warn(incoming)
         error.set(incoming)
         break
       }

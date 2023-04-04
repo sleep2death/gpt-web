@@ -1,16 +1,21 @@
 <script>
-  import MicIcon from "/src/assets/info-circle.svg?component";
+  import MicIcon from "/src/assets/hr.svg?component";
 
   import { scale } from "svelte/transition";
   import { cubicIn } from "svelte/easing";
-  import { suggestions, suggestionIndex, addCommand } from "./store";
+  import { suggestions, suggestionIndex, addCommand, split } from "./store";
   import { fuseResult } from "./fuse";
+
+  function onSplit() {
+    split();
+  }
 </script>
 
 <div class="flex flex-col justify-end items-center p-2 relative z-10">
   <button
     in:scale={{ duration: 150, start: 0.75, easing: cubicIn }}
     class="text-stone-500 active:bg-blue-300 h-10 w-10 rounded-xl flex justify-center items-center"
+    on:click={onSplit}
   >
     <MicIcon width="22" height="22" fill="currentColor" viewBox="0 0 16 16" />
   </button>
