@@ -175,7 +175,7 @@ export async function send(opt) {
 
   try {
     // using absolue url if in development mode, using relative url in production mode
-    const url = import.meta.env.MODE === "development" ? "http://" + import.meta.env.GPTW_HOST + "/chat" : "./chat"
+    const url = import.meta.env.MODE === "development" ? "http://" + import.meta.env.GPTW_HOST + "/api/chat" : "./api/chat"
     response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",

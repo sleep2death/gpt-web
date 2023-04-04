@@ -11,8 +11,8 @@
   async function onRecordStart() {
     const url =
       import.meta.env.MODE === "development"
-        ? "http://" + import.meta.env.GPTW_HOST + "/xunfei"
-        : "/xunfei";
+        ? "http://" + import.meta.env.GPTW_HOST + "/api/xunfei"
+        : "./api/xunfei";
 
     const resp = await fetch(url, {
       method: "POST",

@@ -88,8 +88,8 @@ func createRouter(conf *Config) *gin.Engine {
 
 	r.Static("/", "./web/dist")
 
-	r.POST("/chat", getChatHandler(conf))
-	r.POST("/xunfei", getWebsocketURL(conf))
+	r.POST("/api/chat", getChatHandler(conf))
+	r.POST("/api/xunfei", getWebsocketURL(conf))
 
 	return r
 }
