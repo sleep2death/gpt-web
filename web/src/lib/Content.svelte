@@ -37,7 +37,7 @@
             class="w-full text-center border-b border-stone-500"
             style="margin: 10px 0 20px; "
           >
-            <span class="bg-white" style="padding:0 10px;">THIS IS A TEST</span>
+            <span class="bg-white" style="padding:0 10px;">新对话</span>
           </h2>
         {/if}
       {/each}
