@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.img-cover {
+  object-fit: cover;
+  -webkit-mask-image: url(./assets/pattern-11.svg);
+  mask-image: url(./assets/pattern-11.svg);
+  /* background-image: url(../assets/pattern-11.svg); */
+}
+
+@media(min-width: 768px){
+  .mask {
+    -webkit-mask-image: linear-gradient(
+      transparent calc(100% - 106px),
+      black calc(100% - 84px)
+    );
+    mask-image: linear-gradient(
+      transparent calc(100% - 106px),
+      black calc(100% - 84px)
+    );
+  }
+}
