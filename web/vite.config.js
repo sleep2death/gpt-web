@@ -3,5 +3,10 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  envDir: "../",
+  envPrefix: "GPTW_",
   plugins: [svelte()],
+  build: {
+    emptyOutDir: true
+  },
 })

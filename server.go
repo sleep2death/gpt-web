@@ -157,7 +157,7 @@ func assembleAuthUrl(hosturl string, apiKey, apiSecret string) string {
 	signString := []string{"host: " + ul.Host, "date: " + date, "GET " + ul.Path + " HTTP/1.1"}
 	//拼接签名字符串
 	sgin := strings.Join(signString, "\n")
-	fmt.Println(sgin)
+	// fmt.Println(sgin)
 	//签名结果
 	sha := HmacWithShaTobase64("hmac-sha256", sgin, apiSecret)
 	fmt.Println(sha)

@@ -15,10 +15,13 @@
     e.preventDefault();
 
     // get text representation of clipboard
-    var text = (e.originalEvent || e).clipboardData.getData("text/plain");
+    var text = (e.originalEvent || e).clipboardData
+      .getData("text/plain")
+      .trim();
 
     // insert text manually
-    document.execCommand("insertHTML", false, text);
+    $value = text;
+    // document.execCommand("insertHTML", false, text);
   }
 </script>
 
