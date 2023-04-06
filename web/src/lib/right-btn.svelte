@@ -80,7 +80,7 @@
 
 <style>
   .loader {
-    @apply bg-base-100;
+    @apply bg-primary/60;
     width: 20px;
     height: 20px;
     animation: rotate 1s linear infinite;

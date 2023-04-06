@@ -17,6 +17,7 @@
   import { derived } from "svelte/store";
   import { onMount } from "svelte";
   import ToastLoading from "./lib/toast-loading.svelte";
+  import Drawer from "./lib/drawer.svelte";
 
   const toast_msg = derived(state, ($state) => {
     if ($state === "loading") {
@@ -36,15 +37,15 @@
 
 <main class="w-full h-screen relative">
   <!-- background color and patterns -->
-  <div class="w-full h-screen fixed bg-base-300 ">
+  <div class="w-full h-screen fixed bg-base-200 z-0">
     <div class="fixed w-full h-screen pointer-events-none" />
   </div>
 
   <div
-    class="hidden md:block h-48 bottom-0 mask fixed z-20 bg-base-300 pointer-events-none"
+    class="hidden md:block h-48 bottom-0 mask fixed bg-base-200 pointer-events-none z-20 "
     style="width:calc(100vw - 14px)"
   >
-    <div class="fixed bottom-0 w-full h-screen" />
+    <div class="fixed bottom-0 w-full h-screen bg-base-200" />
   </div>
 
   <!-- Messages -->
