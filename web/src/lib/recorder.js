@@ -314,6 +314,11 @@ class IatRecorder extends EventTarget {
 
     this.recorderStop()
   }
+
+  forceStop() {
+    this.stop()
+    this.webSocket.close()
+  }
 }
 
 export default IatRecorder

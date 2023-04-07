@@ -33,7 +33,7 @@
   {#if !usingMic}
     <button
       in:fade={{ duration: 150, easing: sineIn }}
-      class="btn btn-ghost"
+      class="btn btn-ghost btn-circle"
       on:click={() => {
         dispatch("send");
       }}
@@ -53,7 +53,7 @@
   {:else}
     <button
       in:fade={{ duration: 150, easing: sineIn }}
-      class="btn btn-ghost"
+      class="btn btn-ghost btn-circle"
       on:mousedown={onMouseDown}
     >
       <svg
@@ -80,7 +80,7 @@
 
 <style>
   .loader {
-    @apply bg-primary/60;
+    @apply bg-primary;
     width: 20px;
     height: 20px;
     animation: rotate 1s linear infinite;

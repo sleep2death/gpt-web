@@ -1,6 +1,7 @@
 <script>
   export let messages;
   import { markdown_css, highlight_css, mdi } from "./store";
+  import { currentSession } from "./store/session";
 </script>
 
 <svelte:head>
@@ -8,33 +9,29 @@
   {@html `<style>${$highlight_css}</style>`}
 </svelte:head>
 
-<div class="w-full max-w-4xl">
-  {#each $messages as msg}
-    {#if msg.role === "assistant"}
-      <div class="chat chat-start my-4">
-        <div class="chat-bubble markdown-body">
-          {#if mdi}
-            {@html mdi.render(msg.content)}
-          {:else}
+{#if $currentSession}
+  <div class="w-full max-w-4xl">
+    {#each $currentSession.messages as msg}
+      {#if msg.role === "assistant"}
+        <div class="chat chat-start my-4">
+          <div class="chat-bubble">
+            {#if mdi}
+              {@html mdi.render(msg.content)}
+            {:else}
+              {msg.content}
+            {/if}
+          </div>
+        </div>
+      {:else}
+        <div class="chat chat-end">
+          <div class="chat-bubble">
             {msg.content}
-          {/if}
+          </div>
         </div>
-      </div>
-    {:else}
-      <div class="chat chat-end">
-        <div class="chat-bubble chat-bubble-primary">
-          {msg.content}
-        </div>
-      </div>
-    {/if}
-  {/each}
-</div>
+      {/if}
+    {/each}
+  </div>
+{/if}
 
 <style>
-  .markdown-body {
-    @apply bg-base-100 text-base-content;
-  }
-  .hljs {
-    @apply bg-base-100 text-base-content;
-  }
 </style>

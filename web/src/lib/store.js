@@ -1,27 +1,56 @@
 import { get, writable } from "svelte/store";
 import IatRecorder from "./recorder";
 
+import mdit from "markdown-it";
+import { addMessages, currentSession, updateLastMessage } from "./store/session";
 
-export const darkmode = writable(false)
+export const lightmode = writable(localStorage.theme === "light")
 
-if (window.matchMedia &&
-  window.matchMedia('(prefers-color-scheme: dark)').matches) {
-  darkmode.set(true)
-}
+export const markdown_css = writable("");
+export const highlight_css = writable("");
+
+lightmode.subscribe(async l => {
+  console.log("lightmode:", l)
+  if (!l) {
+    const md = await import(
+      "github-markdown-css/github-markdown-dark.css?inline"
+    );
+    const hl = await import("highlight.js/styles/github-dark.css?inline");
+    markdown_css.set(md.default);
+    highlight_css.set(hl.default);
+  } else {
+    const md = await import(
+      "github-markdown-css/github-markdown-light.css?inline"
+    );
+    const hl = await import("highlight.js/styles/github.css?inline");
+    markdown_css.set(md.default);
+    highlight_css.set(hl.default);
+  }
+})
+
+// if (window.matchMedia &&
+//   window.matchMedia('(prefers-color-scheme: dark)').matches) {
+//   lightmode.set(false)
+// }
+
+// drawer toggle
+export const drawer = writable(false)
 
 // input value in textarea
 export const input = writable("")
+input.subscribe(i => {
+  input.set(html2text(i.trim()))
+})
 
 // state of the sending status
 export const state = writable("idle")
 
 // all messages
-export const messages = writable([])
+export const session = writable({ label: "", id: Date.now(), messages: [] })
 
 // error text
 export const error = writable("")
 
-import mdit from "markdown-it";
 export let mdi = null;
 let hljs = null
 
@@ -43,28 +72,6 @@ export async function init() {
   });
 }
 
-export const markdown_css = writable("");
-export const highlight_css = writable("");
-
-darkmode.subscribe(async d => {
-  if (d) {
-    const md = await import(
-      "github-markdown-css/github-markdown-dark.css?inline"
-    );
-    const hl = await import("highlight.js/styles/github-dark.css?inline");
-    markdown_css.set(md.default);
-    highlight_css.set(hl.default);
-  } else {
-    const md = await import(
-      "github-markdown-css/github-markdown-light.css?inline"
-    );
-    const hl = await import("highlight.js/styles/github.css?inline");
-    markdown_css.set(md.default);
-    highlight_css.set(hl.default);
-  }
-})
-
-
 export async function send() {
   let content = get(input)
   if (content === "") {
@@ -72,8 +79,8 @@ export async function send() {
   }
 
   // if it's the first message, then set the role to system
-  let role = get(messages).length === 0 ? "system" : "user"
-  messages.update(m => [...m, { role: role, content: content }, { role: "assistant", content: "" }])
+  let role = get(session).messages.length === 0 ? "system" : "user"
+  addMessages([{ role: role, content: content }, { role: "assistant", content: "" }])
 
   // clear input value
   input.set("")
@@ -103,7 +110,7 @@ async function chat() {
         "Accept": "text/event-stream",
         "Connection": "keep-alive",
       },
-      body: JSON.stringify({ top_p, temperature, messages: get(messages) }), // body data type must match "Content-Type" header
+      body: JSON.stringify({ top_p, temperature, messages: get(currentSession).messages }), // body data type must match "Content-Type" header
       signal
     })
 
@@ -123,7 +130,8 @@ async function chat() {
         error.set(incoming)
         break
       }
-      messages.update(m => { m[m.length - 1].content += incoming; return m })
+
+      updateLastMessage(incoming)
     }
   } catch (e) {
     console.error(e)
@@ -134,11 +142,19 @@ async function chat() {
 }
 
 export function abort() {
-  controller.abort()
+  const st = get(state)
+  if (st === "loading") {
+    controller.abort()
+  } else if (st === "transcoding") {
+    recorder.forceStop()
+  }
+
+  state.set("idle")
 }
 
 let xunfeiURL = ""
 let recorder = null
+let tempText = ""
 
 export async function startRecord() {
   const TransWorker = await import("./transcode.worker.js?worker");
@@ -159,6 +175,8 @@ export async function startRecord() {
 
   recorder.start()
   state.set("recording")
+
+  tempText = get(input)
 }
 
 export function stopRecord() {
@@ -168,14 +186,35 @@ export function stopRecord() {
   }
 }
 
-export function onXunfeiData(evt) {
-  input.set(evt.detail)
+function onXunfeiData(evt) {
+  input.set(tempText + evt.detail)
 }
 
-export function onXunfeiError(evt) {
+function onXunfeiError(evt) {
   console.error(evt.error)
+  recorder.removeEventListener("data", onXunfeiData)
+  recorder.removeEventListener("error", onXunfeiError)
+  recorder.removeEventListener("close", onXunfeiClose)
 }
 
-export function onXunfeiClose() {
+function onXunfeiClose() {
   state.set("idle")
+  recorder.removeEventListener("data", onXunfeiData)
+  recorder.removeEventListener("error", onXunfeiError)
+  recorder.removeEventListener("close", onXunfeiClose)
+  recorder = null
 }
+
+function html2text(html) {
+  let res = html.replace(/<style([\s\S]*?)<\/style>/gi, '');
+  res = res.replace(/<script([\s\S]*?)<\/script>/gi, '');
+  res = res.replace(/<\/div>/ig, '\n');
+  res = res.replace(/<\/li>/ig, '\n');
+  res = res.replace(/<li>/ig, '  *  ');
+  res = res.replace(/<\/ul>/ig, '\n');
+  res = res.replace(/<\/p>/ig, '\n');
+  res = res.replace(/<br\s*[\/]?>/gi, "\n");
+  res = res.replace(/<[^>]+>/ig, '');
+  return res
+}
+
