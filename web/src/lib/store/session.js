@@ -43,7 +43,7 @@ export function updateLastMessage(incoming) {
   sessions.update(m => m)
 }
 
-export function newChat() {
+export function startNewSession() {
   currentSessionId.set(0)
   drawer.set(false) // close drawer
 }

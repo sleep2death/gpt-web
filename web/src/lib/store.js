@@ -51,27 +51,6 @@ export const session = writable({ label: "", id: Date.now(), messages: [] })
 // error text
 export const error = writable("")
 
-export let mdi = null;
-let hljs = null
-
-export async function init() {
-  const hl = (await import("highlight.js/lib/common"));
-  hljs = hl.default
-
-  mdi = mdit({
-    html: true,
-    linkify: true,
-    typographer: true,
-    highlight: (code, _) => {
-      return (
-        '<pre class="hljs"><code>' +
-        hljs.highlightAuto(code).value +
-        "</code></pre>"
-      );
-    },
-  });
-}
-
 export async function send() {
   let content = get(input)
   if (content === "") {
