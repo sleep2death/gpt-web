@@ -8,7 +8,7 @@
   import { darkmode } from "../store/store";
 </script>
 
-<div class="flex flex-col w-full h-full border-r">
+<div class="flex flex-col w-full h-full">
   <div class="w-full flex flex-row">darkmode: {$darkmode}</div>
   <!-- sessions -->
   <button

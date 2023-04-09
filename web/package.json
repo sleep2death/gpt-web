@@ -11,6 +11,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
     "autoprefixer": "^10.4.14",
+    "daisyui": "^2.51.5",
     "github-markdown-css": "^5.2.0",
     "highlight.js": "^11.7.0",
     "markdown-it": "^13.0.1",
