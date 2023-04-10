@@ -15,7 +15,7 @@
   }
 </script>
 
-<ul class="w-full px-2">
+<ul class="w-full px-2 my-4">
   {#each $sessions as sess (sess.id)}
     <li>
       {#if $currentSessionId === sess.id}

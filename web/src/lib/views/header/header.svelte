@@ -13,6 +13,6 @@
 
 <style>
   .header {
-    @apply sticky top-0 z-30 flex h-16 w-full justify-center bg-opacity-70 backdrop-blur transition-all duration-100 bg-base-100 text-base-content shadow-sm;
+    @apply sticky top-0 z-30 flex h-16 w-full justify-center transition-all duration-100 bg-base-100 text-base-content shadow-sm;
   }
 </style>

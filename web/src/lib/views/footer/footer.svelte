@@ -71,6 +71,6 @@
 
 <style>
   .footer {
-    @apply w-full fixed bottom-0 flex flex-row justify-center items-center bg-base-100 bg-opacity-70 backdrop-blur transition-all;
+    @apply w-full fixed bottom-0 flex flex-row justify-center items-center bg-base-100 transition-all;
   }
 </style>

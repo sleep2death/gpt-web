@@ -1,14 +1,9 @@
 <script>
+  import Header from "./header.svelte";
   import Sessions from "./sessions.svelte";
 </script>
 
-<div class="content">
-  <div class="h-16 w-full drop-shadow-sm" />
+<div class="overflow-y-auto">
+  <Header />
   <Sessions />
 </div>
-
-<style>
-  .content {
-    @apply w-full;
-  }
-</style>

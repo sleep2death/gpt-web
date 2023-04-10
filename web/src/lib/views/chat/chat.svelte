@@ -16,7 +16,7 @@
         {#if msg.role === "assistant"}
           <LBubble content={msg.content} />
         {:else}
-          <div class="chat chat-end">
+          <div class="chat chat-end !py-4">
             <div
               class="chat-bubble !bg-accent-content !text-base-content shadow"
             >
@@ -31,7 +31,7 @@
 
 <style>
   .chat-container {
-    @apply w-full flex flex-row justify-center mb-20;
+    @apply w-full flex flex-row justify-center mb-28 mt-8;
   }
 
   .messages {
